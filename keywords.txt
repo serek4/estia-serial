@@ -1,0 +1,58 @@
+#######################################
+# Syntax Coloring Map For
+# estia serial
+#######################################
+
+#######################################
+# Data Types (KEYWORD1)
+#######################################
+
+EstiaSerial   KEYWORD1
+EstiaFrame   KEYWORD1
+DataReqFrame   KEYWORD1
+DataResFrame   KEYWORD1
+SetModeFrame   KEYWORD1
+SwitchFrame   KEYWORD1
+StatusFrame   KEYWORD1
+TemperatureFrame   KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin  KEYWORD2
+sniffer  KEYWORD2
+requestData  KEYWORD2
+requestJsonData  KEYWORD2
+modeSwitch  KEYWORD2
+operationSwitch  KEYWORD2
+setMode  KEYWORD2
+setTemperature  KEYWORD2
+
+crc16  KEYWORD2
+setByte  KEYWORD2
+getByte  KEYWORD2
+getButter  KEYWORD2
+updateCrc  KEYWORD2
+insertData  KEYWORD2
+stringify  KEYWORD2
+readBuffToFrameBuff  KEYWORD2
+isStatusFrame  KEYWORD2
+isStatusUpdateFrame  KEYWORD2
+
+checkFrame  KEYWORD2
+
+modeOnOff  KEYWORD2
+operationOnOff  KEYWORD2
+
+decode  KEYWORD2
+
+#######################################
+# (KEYWORD3)
+#######################################
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+

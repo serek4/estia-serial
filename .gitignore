@@ -1,0 +1,7 @@
+# VS code settings
+.vscode/
+.directory
+*.txt
+!keywords.txt
+*.csv
+*.tsv
