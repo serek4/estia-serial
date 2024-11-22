@@ -146,6 +146,7 @@ class TemperatureFrame : public EstiaFrame {
 	uint8_t temperature;
 
 	uint8_t constrainTemp(uint8_t temperature);
+	uint8_t convertTemp(uint8_t temperature);
 
   public:
 	TemperatureFrame(uint8_t zone, uint8_t temperature);

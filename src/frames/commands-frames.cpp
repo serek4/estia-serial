@@ -102,6 +102,10 @@ uint8_t TemperatureFrame::constrainTemp(uint8_t temperature) {
 	return constrained;
 }
 
+uint8_t TemperatureFrame::convertTemp(uint8_t temperature) {
+	return (temperature + 16) * 2;
+}
+
 TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t temperature)
     : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_TEMPERATURE_LEN)
     , zone(zone)
@@ -111,16 +115,16 @@ TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t temperature)
 	setByte(TEMPERATURE_CODE_OFFSET, zone, false);
 	switch (zone) {
 		case TEMPERATURE_HEATING_CODE:
-			setByte(TEMPERATURE_HEATING_VALUE_OFFSET, (temperature + 16) * 2, false);
+			setByte(TEMPERATURE_HEATING_VALUE_OFFSET, convertTemp(heatingTemperature), false);
 			// can this two be 0x00?
 			setByte(TEMPERATURE_ZONE2_VALUE_OFFSET, 0x7a, false);
 			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, 0x76, false);
 			// do i need to set this too?
-			setByte(TEMPERATURE_HEATING_VALUE2_OFFSET, (temperature + 16) * 2);
+			setByte(TEMPERATURE_HEATING_VALUE2_OFFSET, convertTemp(heatingTemperature));
 			break;
 
 		case TEMPERATURE_HOT_WATER_CODE:
-			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, (temperature + 16) * 2);
+			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature));
 			break;
 	}
 }
