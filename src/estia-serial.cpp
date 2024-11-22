@@ -171,7 +171,18 @@ void EstiaSerial::setMode(std::string mode, uint8_t onOff) {
 */
 void EstiaSerial::setTemperature(std::string zone, uint8_t temperature) {
 	if (temperatureByName.count(zone) == 0) { return; }
-	TemperatureFrame temperatureFrame(temperatureByName.at(zone), temperature);
+	uint8_t heating = statusData.heatingTarget;
+	uint8_t zone2 = statusData.zone2Target;
+	uint8_t hotWater = statusData.hotWaterTarget;
+	switch (temperatureByName.at(zone)) {
+		case TEMPERATURE_HEATING_CODE:
+			heating = temperature;
+			break;
+		case TEMPERATURE_HOT_WATER_CODE:
+			hotWater = temperature;
+			break;
+	}
+	TemperatureFrame temperatureFrame(temperatureByName.at(zone), heating, zone2, hotWater);
 	this->write(temperatureFrame, false);
 }
 

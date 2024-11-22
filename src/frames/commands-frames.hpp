@@ -143,11 +143,13 @@ const TemperatureByName temperatureByName = {
 class TemperatureFrame : public EstiaFrame {
   private:
 	uint8_t zone;
-	uint8_t temperature;
+	uint8_t heatingTemperature;
+	uint8_t zone2Temperature;
+	uint8_t hotWaterTemperature;
 
 	uint8_t constrainTemp(uint8_t temperature);
 	uint8_t convertTemp(uint8_t temperature);
 
   public:
-	TemperatureFrame(uint8_t zone, uint8_t temperature);
+	TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature);
 };

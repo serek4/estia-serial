@@ -106,10 +106,12 @@ uint8_t TemperatureFrame::convertTemp(uint8_t temperature) {
 	return (temperature + 16) * 2;
 }
 
-TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t temperature)
+TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature)
     : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_TEMPERATURE_LEN)
     , zone(zone)
-    , temperature(constrainTemp(temperature)) {
+    , heatingTemperature(constrainTemp(heatingTemperature))
+    , zone2Temperature(constrainTemp(zone2Temperature))
+    , hotWaterTemperature(constrainTemp(hotWaterTemperature)) {
 	uint8_t emptyRequest[] = {TEMPERATURE_BASE};
 	insertData(emptyRequest, false);
 	setByte(TEMPERATURE_CODE_OFFSET, zone, false);
@@ -117,8 +119,8 @@ TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t temperature)
 		case TEMPERATURE_HEATING_CODE:
 			setByte(TEMPERATURE_HEATING_VALUE_OFFSET, convertTemp(heatingTemperature), false);
 			// can this two be 0x00?
-			setByte(TEMPERATURE_ZONE2_VALUE_OFFSET, 0x7a, false);
-			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, 0x76, false);
+			setByte(TEMPERATURE_ZONE2_VALUE_OFFSET, convertTemp(zone2Temperature), false);
+			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature), false);
 			// do i need to set this too?
 			setByte(TEMPERATURE_HEATING_VALUE2_OFFSET, convertTemp(heatingTemperature));
 			break;
