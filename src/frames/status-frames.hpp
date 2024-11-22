@@ -28,6 +28,7 @@ struct StatusData {
 	bool autoMode;
 	bool quietMode;
 	bool nightMode;
+	bool backupHeater;
 	bool heatingCMP;
 	bool hotWaterHeater;
 	bool hotWaterCMP;

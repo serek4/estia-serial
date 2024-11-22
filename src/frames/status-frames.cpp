@@ -38,6 +38,7 @@ StatusData StatusFrame::decode() {
 		data.autoMode = (buffer.at(12) & 0x04) >> 2 == 0x01;
 		data.quietMode = (buffer.at(12) & 0x10) >> 4 == 0x01;
 		data.nightMode = (buffer.at(12) & 0x20) >> 5 == 0x01;
+		data.backupHeater = (buffer.at(13) & 0x01) >> 0 == 0x01;
 		data.heatingCMP = (buffer.at(13) & 0x02) >> 1 == 0x01;
 		data.hotWaterHeater = (buffer.at(13) & 0x04) >> 2 == 0x01;
 		data.hotWaterCMP = (buffer.at(13) & 0x08) >> 3 == 0x01;

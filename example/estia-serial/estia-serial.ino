@@ -62,6 +62,7 @@ void printStatusData(StatusData& data) {
 		Serial.printf("autoMode:          %s\n", data.autoMode ? "on" : "off");
 		Serial.printf("quietMode:         %s\n", data.quietMode ? "on" : "off");
 		Serial.printf("nightMode:         %s\n", data.nightMode ? "on" : "off");
+		Serial.printf("backupHeater:      %s\n", data.backupHeater ? "on" : "off");
 		Serial.printf("heatingCMP:        %s\n", data.heatingCMP ? "on" : "off");
 		Serial.printf("hotWaterHeater:    %s\n", data.hotWaterHeater ? "on" : "off");
 		Serial.printf("hotWaterCMP:       %s\n", data.hotWaterCMP ? "on" : "off");
