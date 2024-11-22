@@ -46,8 +46,6 @@ struct SensorData {
 using DataToRequest = std::initializer_list<std::string>;
 using EstiaData = std::map<std::string, SensorData>;
 
-extern DataToRequest sensorsToRequest;
-
 class EstiaSerial {
   private:
 	int8_t rxPin;
@@ -83,7 +81,8 @@ class EstiaSerial {
 	StatusData& getStatusData();
 	int16_t requestData(uint8_t requestCode);
 	int16_t requestData(std::string request);
-	void requestSensorsData();
+	void requestSensorsData(DataToRequest&& sensorsToRequest = {SENSORS_DATA_TO_REQUEST});
+	void requestSensorsData(DataToRequest& sensorsToRequest);
 	void modeSwitch(std::string mode, uint8_t onOff);
 	void operationSwitch(std::string operation, uint8_t onOff);
 	void setMode(std::string mode, uint8_t onOff);

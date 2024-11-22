@@ -20,8 +20,6 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 
 SoftwareSerial softwareSerial;
 
-DataToRequest sensorsToRequest = {SENSORS_DATA_TO_REQUEST};
-
 SensorData::SensorData(int16_t value, const float multiplier)
     : value(value)
     , multiplier(multiplier) {
@@ -109,7 +107,7 @@ int16_t EstiaSerial::requestData(std::string request) {
 	return err_not_exist;
 }
 
-void EstiaSerial::requestSensorsData() {
+void EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest) {
 	for (auto& req : sensorsToRequest) {
 		int16_t res = requestData(req);
 		if (res <= err_timeout) {
@@ -126,6 +124,10 @@ void EstiaSerial::requestSensorsData() {
 		}
 		delay(REQUEST_SENSORS_DELAY);
 	}
+}
+
+void EstiaSerial::requestSensorsData(DataToRequest& sensorsToRequest) {
+	requestSensorsData(std::forward<DataToRequest>(sensorsToRequest));
 }
 /**
 * @param mode `auto` `quiet` `night`

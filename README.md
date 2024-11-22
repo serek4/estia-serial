@@ -2,7 +2,8 @@
 
 ## Hardware adapter
 
-Hardware adapter for adjusting Toshiba AB protocol to 3.3V is taken from @issalig [toshiba air conditioners project](https://github.com/issalig/toshiba_air_cond?tab=readme-ov-file#custom-hardware).  
+Hardware adapter for adjusting Toshiba AB protocol to 3.3V is taken from @issalig
+[toshiba air conditioners project](https://github.com/issalig/toshiba_air_cond?tab=readme-ov-file#custom-hardware).  
 **Note that `A` should by connected to positive and `B` to negative.**  
 
 ## Microcontroller
@@ -14,6 +15,9 @@ Code is written to work on Arduino esp32 or Arduino esp8266.
 - [EspSoftwareSerial](https://github.com/plerup/espsoftwareserial)
 
 ## Config
+
+I have 11kW model, so if there is default value depending on model 11kW is used.  
+I'm not using zone 2 and cooling, so these are not implemented.
 
 `config.h`
 ```c++
@@ -47,7 +51,7 @@ estiaSerial.requestData(0x06);     // request data by code
 ```
 ### Request multiple data points at once
 
-Data to request is defined in `config.h` -> `SENSORS_DATA_TO_REQUEST`.  
+Default sensors data to request is defined in `config.h` -> `SENSORS_DATA_TO_REQUEST`.  
 Data will be saved to `estiaSerial.sensorData`.
 
 `EstiaData::first` = sensor name  
@@ -56,7 +60,7 @@ data value equal or below `-200` is an error code
 
 
 ```c++
-estiaSerial.requestSensorsData();  // request data update
+estiaSerial.requestSensorsData();    // request update for all data points
 for (auto& element : estiaSerial.sensorData) {
 	Serial.printf("%s :", element.first);
 	// data is error code skip multiplier
@@ -68,6 +72,23 @@ for (auto& element : estiaSerial.sensorData) {
 	Serial.println();
 }
 ```
+It is possible to update only few sensors.
+
+```c++
+estiaSerial.requestSensorsData({"twi", "two", "wf"});
+for (auto& element : estiaSerial.sensorData) {    // request update for chosen data points
+	Serial.printf("%s :", element.first);
+	// data is error code skip multiplier
+	if (element.second.value <= EstiaSerial::err_not_exist) {
+		Serial.print(element.second.value);
+	} else {
+		Serial.print(element.second.value * element.second.multiplier);
+	}
+	Serial.println();
+}
+
+```
+
 
 ### Available data points
 
@@ -118,7 +139,8 @@ if (incomingData != emptyString) {
 	incomingData = emptyString;
 }
 ```
-Sniffer also decodes status frames. There is status data update flag available `estiaSerial.newStatusData` to indicate when data was updated.
+Sniffer also decodes status frames. There is status data update flag available
+`estiaSerial.newStatusData` to indicate if data was updated.
 
 ```c++
 if (estiaSerial.newStatusData) {

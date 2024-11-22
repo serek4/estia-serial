@@ -28,7 +28,7 @@ void loop() {
 		if (estiaSerial.newStatusData) {
 			StatusData data = estiaSerial.getStatusData();
 			printStatusData(data);
-			// request sensors data after status data (extended) received (every 30s)
+			// request sensors data after extended status data received (every 30s)
 			if (data.extendedData) {
 				if (data.pump1 ||                                                      // when pump1 is on every 30s
 				    millis() - requestDataTimer >= requestDataOffInterval - 1000) {    // when pump1 is off every 5min
@@ -40,7 +40,8 @@ void loop() {
 		incomingData = emptyString;
 	} else if (requestData && millis() - requestDataTimer >= requestDataDelay) {
 		requestData = false;
-		estiaSerial.requestSensorsData();    // request data update
+		estiaSerial.requestSensorsData();    // request update for all data points
+		// estiaSerial.requestSensorsData({"twi", "two", "wf"});    // request update for chosen data points
 		for (auto& element : estiaSerial.sensorData) {
 			Serial.printf("%s :", element.first);
 			// data is error code skip multiplier
