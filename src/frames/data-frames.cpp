@@ -40,9 +40,11 @@ DataResFrame::DataResFrame(FrameBuffer&& buffer)
 		value = (this->buffer.at(RES_DATA_VALUE_OFFSET) << 8) | this->buffer.at(RES_DATA_VALUE_OFFSET + 1);
 	}
 }
-// DataResFrame::DataResFrame(FrameBuffer& buffer)
-//     : DataResFrame::DataResFrame(std::forward<FrameBuffer>(buffer)) {
-// }
+
+DataResFrame::DataResFrame(FrameBuffer& buffer)
+    : DataResFrame::DataResFrame(std::forward<FrameBuffer>(buffer)) {
+}
+
 DataResFrame::DataResFrame(ReadBuffer& buffer)
     : DataResFrame::DataResFrame(readBuffToFrameBuff(buffer)) {
 }

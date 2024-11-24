@@ -90,10 +90,8 @@ int16_t EstiaSerial::requestData(uint8_t requestCode) {
 		if (millis() - responseTimeoutTimer > REQUEST_TIMEOUT) { return err_timeout; }
 		delay(ESTIA_SERIAL_BYTE_DELAY);
 	}
-	// delay(ESTIA_SERIAL_BYTE_DELAY * FRAME_RES_DATA_LEN);    // wait for whole frame
 	delay(ESTIA_SERIAL_BYTE_DELAY * 2);    // 2 bytes head start
 	ReadBuffer buffer;
-	// this->read(buffer, false);        // read response into buffer
 	this->read(buffer);               // read response into buffer
 	DataResFrame response(buffer);    // create response frame from read buffer
 	if (response.error != DataResFrame::err_ok) { return err_timeout + -response.error; }
@@ -129,6 +127,7 @@ void EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest) {
 void EstiaSerial::requestSensorsData(DataToRequest& sensorsToRequest) {
 	requestSensorsData(std::forward<DataToRequest>(sensorsToRequest));
 }
+
 /**
 * @param mode `auto` `quiet` `night`
 * @param onOff `1` `0`
@@ -138,6 +137,7 @@ void EstiaSerial::modeSwitch(std::string mode, uint8_t onOff) {
 	SetModeFrame modeFrame(mode, onOff);
 	this->write(modeFrame, false);
 }
+
 /**
 * @param operation `heating` `hot_water`
 * @param onOff `1` `0`
@@ -147,6 +147,7 @@ void EstiaSerial::operationSwitch(std::string operation, uint8_t onOff) {
 	SwitchFrame switchFrame(operation, onOff);
 	this->write(switchFrame, false);
 }
+
 /**
 * @param mode `auto` `quiet` `night` `heating` `hot_water`
 * @param onOff `1` `0`
@@ -156,15 +157,6 @@ void EstiaSerial::setMode(std::string mode, uint8_t onOff) {
 	if (switchOperationByName.count(mode) == 0) { operationSwitch(mode, onOff); }
 }
 
-// void EstiaSerial::setHeatingTemperature(uint8_t temperature) {
-// 	HeatingTemperatureFrame heatingTemperature(temperature);
-// 	this->write(heatingTemperature, false);
-// }
-
-// void EstiaSerial::setHotWaterTemperature(uint8_t temperature) {
-// 	HotWaterTemperatureFrame hotWaterTemperature(temperature);
-// 	this->write(hotWaterTemperature, false);
-// }
 /**
 * @param zone `heating` `hot_water`
 * @param temperature for heating `20-65`, for hot water `40-75`

@@ -63,23 +63,3 @@ class StatusFrame : public EstiaFrame {
 
 	StatusData decode();
 };
-
-
-// class StatusUpdateFrame : public EstiaFrame {
-//   private:
-// 	uint8_t checkFrame();
-
-//   public:
-// 	enum StatusError {
-// 		err_ok,
-// 		err_data_len,
-// 		err_frame_type,
-// 		err_crc,
-// 	};
-// 	StatusUpdateFrame(FrameBuffer&& buffer);
-// 	StatusUpdateFrame(ReadBuffer& buffer);
-
-// 	uint8_t error;
-
-// 	StatusData decode();
-// };

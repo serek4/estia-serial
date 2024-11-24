@@ -55,6 +55,8 @@ class EstiaSerial {
 	StatusData statusData;
 
 	SoftwareSerial* serial;
+	void modeSwitch(std::string mode, uint8_t onOff);
+	void operationSwitch(std::string operation, uint8_t onOff);
 	String snifferFrameStringify();
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
 	void write(const EstiaFrame& frame, bool disableRx = true);
@@ -83,10 +85,6 @@ class EstiaSerial {
 	int16_t requestData(std::string request);
 	void requestSensorsData(DataToRequest&& sensorsToRequest = {SENSORS_DATA_TO_REQUEST});
 	void requestSensorsData(DataToRequest& sensorsToRequest);
-	void modeSwitch(std::string mode, uint8_t onOff);
-	void operationSwitch(std::string operation, uint8_t onOff);
 	void setMode(std::string mode, uint8_t onOff);
-	// void setHeatingTemperature(uint8_t temperature);
-	// void setHotWaterTemperature(uint8_t temperature);
 	void setTemperature(std::string zone, uint8_t temperature);
 };

@@ -67,11 +67,11 @@ class SetModeFrame : public EstiaFrame {
 #define SWITCH_OPERATION_HOT_WATER 0x28
 
 // heating on/off
-// a0 00 11 08 00 00 40 08 00 00 41 23 8f 38 -> on  0x23 offset 11
-// a0 00 11 08 00 00 40 08 00 00 41 22 9e b1 -> off 0x22 offset 11
+// a0 00 11 08 00 00 40 08 00 00 41 23 8f 38 -> on,  0x23 offset 11
+// a0 00 11 08 00 00 40 08 00 00 41 22 9e b1 -> off, 0x22 offset 11
 // hot water on/off
-// a0 00 11 08 00 00 40 08 00 00 41 2c 77 cf -> on  0x2c offset 11
-// a0 00 11 08 00 00 40 08 00 00 41 28 31 eb -> off 0x28 offset 11
+// a0 00 11 08 00 00 40 08 00 00 41 2c 77 cf -> on,  0x2c offset 11
+// a0 00 11 08 00 00 40 08 00 00 41 28 31 eb -> off, 0x28 offset 11
 
 using SwitchOperationByName = std::unordered_map<std::string, uint8_t>;
 
@@ -90,35 +90,6 @@ class SwitchFrame : public EstiaFrame {
 	SwitchFrame(uint8_t operation, uint8_t onOff);
 	SwitchFrame(std::string operation, uint8_t onOff);
 };
-
-// // heating temperature
-// // a0 00 11 0c 00 00 40 08 00 03 c1 02 5c 7a 76 5c b2 d1 -> heating temperature change, offset 12 and 15 value = (temp + 16) * 2
-
-// #define HEATING_TEMPERATURE_VALUE_OFFSET 12
-// #define HEATING_TEMPERATURE_VALUE2_OFFSET 15
-// #define HEATING_TEMPERATURE_BASE 0x00, 0x00, 0x40, 0x08, 0x00, 0x03, 0xc1, 0x02, 0x5c, 0x7a, 0x76, 0x5c
-
-// class HeatingTemperatureFrame : public EstiaFrame {
-//   private:
-// 	uint8_t temperature;
-
-//   public:
-// 	HeatingTemperatureFrame(uint8_t temperature);
-// };
-
-// // hot water temperature
-// // a0 00 11 0c 00 00 40 08 00 03 c1 08 00 00 70 00 83 c0 -> hot water temperature change, offset 14 value = (temp + 16) * 2
-
-// #define HOT_WATER_TEMPERATURE_VALUE_OFFSET 14
-// #define HOT_WATER_TEMPERATURE_BASE 0x00, 0x00, 0x40, 0x08, 0x00, 0x03, 0xc1, 0x08, 0x00, 0x00, 0x70, 0x00
-
-// class HotWaterTemperatureFrame : public EstiaFrame {
-//   private:
-// 	uint8_t temperature;
-
-//   public:
-// 	HotWaterTemperatureFrame(uint8_t temperature);
-// };
 
 #define TEMPERATURE_BASE 0x00, 0x00, 0x40, 0x08, 0x00, 0x03, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00
 #define TEMPERATURE_CODE_OFFSET 11

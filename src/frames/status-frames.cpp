@@ -24,6 +24,7 @@ StatusFrame::StatusFrame(FrameBuffer&& buffer, uint8_t length)
     , error(0) {
 	error = checkFrame();
 }
+
 StatusFrame::StatusFrame(ReadBuffer& buffer, uint8_t length)
     : StatusFrame::StatusFrame(readBuffToFrameBuff(buffer), length) {
 }
@@ -66,38 +67,3 @@ uint8_t StatusFrame::checkFrame() {
 	if (dataLength != length - FRAME_HEAD_AND_CRC_LEN) { return err_data_len; }
 	return err_ok;
 }
-
-// StatusUpdateFrame::StatusUpdateFrame(FrameBuffer&& buffer)
-//     : EstiaFrame::EstiaFrame(buffer, FRAME_UPDATE_LEN)
-//     , error(0) {
-// 	error = checkFrame();
-// }
-// StatusUpdateFrame::StatusUpdateFrame(ReadBuffer& buffer)
-//     : StatusUpdateFrame::StatusUpdateFrame(readBuffToFrameBuff(buffer)) {
-// }
-
-// StatusData StatusUpdateFrame::decode() {
-// 	StatusData data;
-// 	if (error == err_ok) {
-// 		data.heating = (buffer.at(11) & 0xc1) == 0xc1;
-// 		data.hotWater = (buffer.at(11) & 0xc2) == 0xc2;
-// 		data.autoMode = (buffer.at(12) & 0x04) >> 2 == 0x01;
-// 		data.quietMode = (buffer.at(12) & 0x10) >> 4 == 0x01;
-// 		data.nightMode = (buffer.at(12) & 0x20) >> 5 == 0x01;
-// 		data.heatingCMP = (buffer.at(13) & 0x02) >> 1 == 0x01;
-// 		data.hotWaterCMP = (buffer.at(13) & 0x08) >> 3 == 0x01;
-// 		data.pump1 = (buffer.at(13) & 0x10) >> 4 == 0x01;
-// 		data.hotWaterTarget = buffer.at(14) / 0x02 - 0x10;
-// 		data.heatingTarget = buffer.at(15) / 0x02 - 0x10;
-// 		data.zone2Target = buffer.at(16) / 0x02 - 0x10;
-// 		data.nightModeActive = (buffer.at(17) & 0x10) == 0x10;
-// 	}
-// 	return data;
-// }
-
-// uint8_t StatusUpdateFrame::checkFrame() {
-// 	if (crc != crc16(buffer.data(), length - 2)) { return err_crc; }
-// 	if (type != FRAME_TYPE_UPDATE) { return err_frame_type; }
-// 	if (dataLength != length - FRAME_HEAD_AND_CRC_LEN) { return err_data_len; }
-// 	return err_ok;
-// }

@@ -150,7 +150,7 @@ class DataResFrame : public EstiaFrame {
 	};
 
 	DataResFrame(FrameBuffer&& buffer);
-	// DataResFrame(FrameBuffer& buffer);
+	DataResFrame(FrameBuffer& buffer);
 	DataResFrame(ReadBuffer& buffer);
 
 	uint8_t error;

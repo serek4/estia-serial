@@ -72,40 +72,6 @@ uint8_t SwitchFrame::operationOnOff(uint8_t onOff) {
 	return onOff;
 }
 
-// HeatingTemperatureFrame::HeatingTemperatureFrame(uint8_t temperature)
-//     : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_TEMPERATURE_LEN)
-//     , temperature(temperature) {
-// 	uint8_t emptyRequest[] = {HEATING_TEMPERATURE_BASE};
-// 	insertData(emptyRequest, false);
-// 	setByte(HEATING_TEMPERATURE_VALUE_OFFSET, (temperature + 16) * 2, false);
-// 	setByte(HEATING_TEMPERATURE_VALUE2_OFFSET, (temperature + 16) * 2);
-// }
-
-// HotWaterTemperatureFrame::HotWaterTemperatureFrame(uint8_t temperature)
-//     : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_TEMPERATURE_LEN)
-//     , temperature(temperature) {
-// 	uint8_t emptyRequest[] = {HOT_WATER_TEMPERATURE_BASE};
-// 	insertData(emptyRequest, false);
-// 	setByte(HOT_WATER_TEMPERATURE_VALUE_OFFSET, (temperature + 16) * 2);
-// }
-
-uint8_t TemperatureFrame::constrainTemp(uint8_t temperature) {
-	uint8_t constrained = temperature;
-	switch (zone) {
-		case TEMPERATURE_HEATING_CODE:
-			constrained = constrain(temperature, MIN_HEATING_TEMP, MAX_HEATING_TEMP);
-			break;
-		case TEMPERATURE_HOT_WATER_CODE:
-			constrained = constrain(temperature, MIN_HOT_WATER_TEMP, MAX_HOT_WATER_TEMP);
-			break;
-	}
-	return constrained;
-}
-
-uint8_t TemperatureFrame::convertTemp(uint8_t temperature) {
-	return (temperature + 16) * 2;
-}
-
 TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature)
     : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_TEMPERATURE_LEN)
     , zone(zone)
@@ -129,4 +95,21 @@ TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uin
 			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature));
 			break;
 	}
+}
+
+uint8_t TemperatureFrame::constrainTemp(uint8_t temperature) {
+	uint8_t constrained = temperature;
+	switch (zone) {
+		case TEMPERATURE_HEATING_CODE:
+			constrained = constrain(temperature, MIN_HEATING_TEMP, MAX_HEATING_TEMP);
+			break;
+		case TEMPERATURE_HOT_WATER_CODE:
+			constrained = constrain(temperature, MIN_HOT_WATER_TEMP, MAX_HOT_WATER_TEMP);
+			break;
+	}
+	return constrained;
+}
+
+uint8_t TemperatureFrame::convertTemp(uint8_t temperature) {
+	return (temperature + 16) * 2;
 }

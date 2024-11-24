@@ -61,7 +61,6 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 
 using ReadBuffer = std::deque<uint8_t>;
 using FrameBuffer = std::vector<uint8_t>;
-// const std::array<uint8_t, 13> heartbeat = {0xa0, 0x00, 0x10, 0x07, 0x00, 0x08, 0x00, 0x00, 0xfe, 0x00, 0x8a, 0x75, 0x05};
 
 class EstiaFrame {
   private:
