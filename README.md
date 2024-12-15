@@ -14,10 +14,18 @@ Code is written to work on Arduino esp32 or Arduino esp8266.
 - Arduino core ([esp32](https://github.com/espressif/arduino-esp32) or [esp8266](https://github.com/esp8266/Arduino))
 - [EspSoftwareSerial](https://github.com/plerup/espsoftwareserial)
 
+## Missing features
+- cooling
+- zone 2
+- hot water boost
+- anti bacteria
+- frost protection
+- forced defrost
+- commands ack
+
 ## Config
 
 I have 11kW model, so if there is default value depending on model 11kW is used.  
-I'm not using zone 2 and cooling, so these are not implemented.
 
 `config.h`
 ```c++
@@ -148,3 +156,4 @@ if (estiaSerial.newStatusData) {
 	printStatusData(data);
 }
 ```
+## [RAW frames](frames.md)
