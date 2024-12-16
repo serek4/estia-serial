@@ -29,6 +29,8 @@ EstiaSerial::EstiaSerial(uint8_t rxPin, uint8_t txPin)
     : serial(&softwareSerial)
     , rxPin(rxPin)
     , txPin(txPin)
+    , requestDone(false)
+    , requestCounter(0)
     , snifferBuffer()
     , snifferStream(emptyString)
     , newStatusData(false)
@@ -105,27 +107,36 @@ int16_t EstiaSerial::requestData(std::string request) {
 	return err_not_exist;
 }
 
-void EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest) {
-	for (auto& req : sensorsToRequest) {
-		int16_t res = requestData(req);
-		if (res <= err_timeout) {
-			for (uint8_t ret = 0; ret < 1; ret++) {    // 1 request retries
-				delay(REQUEST_SENSORS_DELAY);
-				res = requestData(req);
-				if (res > err_timeout) { break; }
-			}
-		}
-		if (sensorData.count(req) == 1) {
-			sensorData.at(req).value = res;
-		} else {
-			sensorData.emplace(req, SensorData(res, requestsMap.at(req).multiplier));
-		}
-		delay(REQUEST_SENSORS_DELAY);
+bool EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest) {
+	if (requestDone) {
+		requestDone = false;
+		requestCounter = 0;
 	}
+	std::string req = sensorsToRequest.at(requestCounter);
+	int16_t res = requestData(req);
+	if (res <= err_timeout) {
+		for (uint8_t ret = 0; ret < REQUEST_RETRIES; ret++) {    // request retries
+			delay(REQUEST_RETRY_DELAY);
+			res = requestData(req);
+			if (res > err_timeout) { break; }
+		}
+	}
+	if (sensorData.count(req) == 1) {
+		sensorData.at(req).value = res;
+	} else {
+		sensorData.emplace(req, SensorData(res, requestsMap.at(req).multiplier));
+	}
+	if (requestCounter >= sensorsToRequest.size() - 1) {
+		requestCounter = 0;
+		requestDone = true;
+	} else {
+		requestCounter++;
+	}
+	return requestDone;
 }
 
-void EstiaSerial::requestSensorsData(DataToRequest& sensorsToRequest) {
-	requestSensorsData(std::forward<DataToRequest>(sensorsToRequest));
+bool EstiaSerial::requestSensorsData(DataToRequest& sensorsToRequest) {
+	return requestSensorsData(std::forward<DataToRequest>(sensorsToRequest));
 }
 
 /**

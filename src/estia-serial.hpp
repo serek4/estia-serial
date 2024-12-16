@@ -23,9 +23,9 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #include "frames/commands-frames.hpp"
 #include "frames/status-frames.hpp"
 #include <SoftwareSerial.h>
-#include <initializer_list>
 #include <map>
 #include <string>
+#include <vector>
 
 #define ESTIA_SERIAL_BAUD 2400              // 2400
 #define ESTIA_SERIAL_CONFIG SWSERIAL_8E1    // 8E1
@@ -35,21 +35,24 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define ESTIA_SERIAL_BYTE_DELAY 5     // 4.2 ms minimum for baud 2400
 #define ESTIA_SERIAL_READ_DELAY 55    // minimum valid frame is 13 Bytes so min 54.6ms between frames
 
+#define REQUEST_RETRIES 1
 #define REQUEST_TIMEOUT 250
-#define REQUEST_SENSORS_DELAY 15
+#define REQUEST_RETRY_DELAY 15
 
 struct SensorData {
 	SensorData(int16_t value, const float multiplier);
 	int16_t value;
 	float multiplier;
 };
-using DataToRequest = std::initializer_list<std::string>;
+using DataToRequest = std::vector<std::string>;
 using EstiaData = std::map<std::string, SensorData>;
 
 class EstiaSerial {
   private:
 	int8_t rxPin;
 	int8_t txPin;
+	bool requestDone;
+	uint8_t requestCounter;
 	ReadBuffer snifferBuffer;
 	String snifferStream;
 	StatusData statusData;
@@ -83,8 +86,8 @@ class EstiaSerial {
 	StatusData& getStatusData();
 	int16_t requestData(uint8_t requestCode);
 	int16_t requestData(std::string request);
-	void requestSensorsData(DataToRequest&& sensorsToRequest = {SENSORS_DATA_TO_REQUEST});
-	void requestSensorsData(DataToRequest& sensorsToRequest);
+	bool requestSensorsData(DataToRequest&& sensorsToRequest = {SENSORS_DATA_TO_REQUEST});
+	bool requestSensorsData(DataToRequest& sensorsToRequest);
 	void setMode(std::string mode, uint8_t onOff);
 	void setTemperature(std::string zone, uint8_t temperature);
 };

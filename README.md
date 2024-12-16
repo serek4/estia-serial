@@ -68,31 +68,33 @@ data value equal or below `-200` is an error code
 
 
 ```c++
-estiaSerial.requestSensorsData();    // request update for all data points
-for (auto& element : estiaSerial.sensorData) {
-	Serial.printf("%s :", element.first);
-	// data is error code skip multiplier
-	if (element.second.value <= EstiaSerial::err_not_exist) {
-		Serial.print(element.second.value);
-	} else {
-		Serial.print(element.second.value * element.second.multiplier);
+if (estiaSerial.requestSensorsData()) {    // request update for all data points
+	for (auto& element : estiaSerial.sensorData) {
+		Serial.printf("%s :", element.first);
+		// data is error code skip multiplier
+		if (element.second.value <= EstiaSerial::err_not_exist) {
+			Serial.print(element.second.value);
+		} else {
+			Serial.print(element.second.value * element.second.multiplier);
+		}
+		Serial.println();
 	}
-	Serial.println();
 }
 ```
 It is possible to update only few sensors.
 
 ```c++
-estiaSerial.requestSensorsData({"twi", "two", "wf"});
-for (auto& element : estiaSerial.sensorData) {    // request update for chosen data points
-	Serial.printf("%s :", element.first);
-	// data is error code skip multiplier
-	if (element.second.value <= EstiaSerial::err_not_exist) {
-		Serial.print(element.second.value);
-	} else {
-		Serial.print(element.second.value * element.second.multiplier);
+if (estiaSerial.requestSensorsData({"twi", "two", "wf"})) {
+	for (auto& element : estiaSerial.sensorData) {    // request update for chosen data points
+		Serial.printf("%s :", element.first);
+		// data is error code skip multiplier
+		if (element.second.value <= EstiaSerial::err_not_exist) {
+			Serial.print(element.second.value);
+		} else {
+			Serial.print(element.second.value * element.second.multiplier);
+		}
+		Serial.println();
 	}
-	Serial.println();
 }
 
 ```

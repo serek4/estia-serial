@@ -39,18 +39,20 @@ void loop() {
 		}
 		incomingData = emptyString;
 	} else if (requestData && millis() - requestDataTimer >= requestDataDelay) {
-		requestData = false;
-		estiaSerial.requestSensorsData();    // request update for all data points
-		// estiaSerial.requestSensorsData({"twi", "two", "wf"});    // request update for chosen data points
-		for (auto& element : estiaSerial.sensorData) {
-			Serial.printf("%s :", element.first);
-			// data is error code skip multiplier
-			if (element.second.value <= EstiaSerial::err_not_exist) {
-				Serial.print(element.second.value);
-			} else {
-				Serial.print(element.second.value * element.second.multiplier);
+		requestDataTimer = millis();
+		if (estiaSerial.requestSensorsData()) {    // request update for all data points
+		// if (estiaSerial.requestSensorsData({"twi", "two", "wf"})) {    // request update for chosen data points
+			requestData = false;
+			for (auto& element : estiaSerial.sensorData) {
+				Serial.printf("%s :", element.first);
+				// data is error code skip multiplier
+				if (element.second.value <= EstiaSerial::err_not_exist) {
+					Serial.print(element.second.value);
+				} else {
+					Serial.print(element.second.value * element.second.multiplier);
+				}
+				Serial.println();
 			}
-			Serial.println();
 		}
 	}
 }
