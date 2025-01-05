@@ -143,10 +143,11 @@ if (estiaSerial.requestSensorsData({"twi", "two", "wf"})) {
 Sniffer returns raw frames in hex e.g. `a0 00 10 07 00 08 00 00 fe 00 8a 75 05`
 
 ```c++
-String incomingData = estiaSerial.sniffer();
-if (incomingData != emptyString) {
-	Serial.println(incomingData);
-	incomingData = emptyString;
+switch (estiaSerial.sniffer()) {
+	case EstiaSerial::sniff_new_frame:
+	case EstiaSerial::sniff_pending_frame:
+		Serial.println(estiaSerial.getFrame());
+		break;
 }
 ```
 Sniffer also decodes status frames. There is status data update flag available

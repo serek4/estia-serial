@@ -23,6 +23,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #include "frames/commands-frames.hpp"
 #include "frames/status-frames.hpp"
 #include <SoftwareSerial.h>
+#include <deque>
 #include <map>
 #include <string>
 #include <vector>
@@ -45,6 +46,7 @@ struct SensorData {
 };
 using DataToRequest = std::vector<std::string>;
 using EstiaData = std::map<std::string, SensorData>;
+using SniffedFrames = std::deque<String>;
 
 class EstiaSerial {
   private:
@@ -55,12 +57,13 @@ class EstiaSerial {
 	uint8_t requestRetry;
 	ReadBuffer snifferBuffer;
 	String snifferStream;
+	SniffedFrames sniffedFrames;
 	StatusData statusData;
 
 	SoftwareSerial* serial;
 	void modeSwitch(std::string mode, uint8_t onOff);
 	void operationSwitch(std::string operation, uint8_t onOff);
-	String snifferFrameStringify();
+	bool snifferFrameStringify();
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
 	void write(const EstiaFrame& frame, bool disableRx = true);
 	void read(ReadBuffer& buffer, bool byteDelay = true);
@@ -75,6 +78,12 @@ class EstiaSerial {
 		err_timeout,
 		err_not_exist,
 	};
+	enum SnifferState {
+		sniff_idle,
+		sniff_busy,
+		sniff_new_frame,
+		sniff_pending_frame,
+	};
 
 	EstiaSerial(uint8_t rxPin, uint8_t txPin);
 
@@ -82,7 +91,8 @@ class EstiaSerial {
 	EstiaData sensorData;
 
 	void begin();
-	String sniffer();
+	SnifferState sniffer();
+	String getFrame();
 	StatusData& getStatusData();
 	int16_t requestData(uint8_t requestCode);
 	int16_t requestData(std::string request);

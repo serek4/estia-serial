@@ -34,6 +34,7 @@ EstiaSerial::EstiaSerial(uint8_t rxPin, uint8_t txPin)
     , requestRetry(0)
     , snifferBuffer()
     , snifferStream(emptyString)
+    , sniffedFrames()
     , newStatusData(false)
     , statusData()
     , sensorData() {
@@ -44,21 +45,33 @@ void EstiaSerial::begin() {
 	serial->enableIntTx(false);    //disable TX
 }
 
-String EstiaSerial::sniffer() {
+EstiaSerial::SnifferState EstiaSerial::sniffer() {
 	static u_long readTimer = 0;
 	if (millis() - readTimer > ESTIA_SERIAL_READ_DELAY) {    // throttle serial read
 		readTimer = millis();
 		this->read(snifferBuffer);
-		if (snifferBuffer.front() == FRAME_BEGIN) {
+		if (snifferBuffer.size() > 0 && snifferBuffer.front() == FRAME_BEGIN) {
 			if (EstiaFrame::isStatusFrame(snifferBuffer) || EstiaFrame::isStatusUpdateFrame(snifferBuffer)) {
 				StatusFrame statusFrame(snifferBuffer, snifferBuffer.size());
 				statusData = statusFrame.decode();
 				newStatusData = true;
 			}
 		}
-		return this->snifferFrameStringify();
+		if (this->snifferFrameStringify()) {
+			return sniff_new_frame;
+		}
 	}
-	return emptyString;
+	if (sniffedFrames.size() > 0) { return sniff_pending_frame; }
+	return snifferBuffer.size() > 0 || serial->available() ? sniff_busy : sniff_idle;
+}
+
+String EstiaSerial::getFrame() {
+	String frame = emptyString;
+	if (sniffedFrames.size() > 0) {
+		frame = sniffedFrames.front();
+		sniffedFrames.pop_front();
+	}
+	return frame;
 }
 
 StatusData& EstiaSerial::getStatusData() {
@@ -66,7 +79,7 @@ StatusData& EstiaSerial::getStatusData() {
 	return statusData;
 }
 
-String EstiaSerial::snifferFrameStringify() {
+bool EstiaSerial::snifferFrameStringify() {
 	if (snifferBuffer.size() >= FRAME_MIN_LEN) {
 		while (snifferBuffer.size() > 0) {
 			if (snifferStream != emptyString && snifferBuffer.size() >= 2 && snifferBuffer.front() == 0xa0 && snifferBuffer.at(1) == 0x00) {
@@ -78,11 +91,11 @@ String EstiaSerial::snifferFrameStringify() {
 			snifferBuffer.pop_front();
 		}
 		snifferStream.trim();
-		String newFrame = snifferStream;
+		sniffedFrames.push_back(snifferStream);
 		snifferStream = emptyString;
-		return newFrame;
+		return true;
 	}
-	return emptyString;
+	return false;
 }
 
 int16_t EstiaSerial::requestData(uint8_t requestCode) {

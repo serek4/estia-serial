@@ -22,38 +22,42 @@ void setup() {
 }
 
 void loop() {
-	String incomingData = estiaSerial.sniffer();
-	if (incomingData != emptyString) {
-		Serial.println(incomingData);
-		if (estiaSerial.newStatusData) {
-			StatusData data = estiaSerial.getStatusData();
-			printStatusData(data);
-			// request sensors data after extended status data received (every 30s)
-			if (data.extendedData) {
-				if (data.pump1 ||                                                      // when pump1 is on every 30s
-				    millis() - requestDataTimer >= requestDataOffInterval - 1000) {    // when pump1 is off every 5min
-					requestDataTimer = millis();
-					requestData = true;
+	switch (estiaSerial.sniffer()) {
+		case EstiaSerial::sniff_new_frame:
+		case EstiaSerial::sniff_pending_frame:
+			Serial.println(estiaSerial.getFrame());
+			if (estiaSerial.newStatusData) {
+				StatusData data = estiaSerial.getStatusData();
+				printStatusData(data);
+				// request sensors data after extended status data received (every 30s)
+				if (data.extendedData) {
+					if (data.pump1 ||                                                      // when pump1 is on every 30s
+					    millis() - requestDataTimer >= requestDataOffInterval - 1000) {    // when pump1 is off every 5min
+						requestDataTimer = millis();
+						requestData = true;
+					}
 				}
 			}
-		}
-		incomingData = emptyString;
-	} else if (requestData && millis() - requestDataTimer >= requestDataDelay) {
-		requestDataTimer = millis();
-		if (estiaSerial.requestSensorsData()) {    // request update for all data points
-		// if (estiaSerial.requestSensorsData({"twi", "two", "wf"})) {    // request update for chosen data points
-			requestData = false;
-			for (auto& element : estiaSerial.sensorData) {
-				Serial.printf("%s :", element.first);
-				// data is error code skip multiplier
-				if (element.second.value <= EstiaSerial::err_not_exist) {
-					Serial.print(element.second.value);
-				} else {
-					Serial.print(element.second.value * element.second.multiplier);
+			break;
+		case EstiaSerial::sniff_idle:
+			if (requestData && millis() - requestDataTimer >= requestDataDelay) {
+				if (estiaSerial.requestSensorsData()) {    // request update for all data points
+				// if (estiaSerial.requestSensorsData({"twi", "two", "wf"})) {    // request update for chosen data points
+					requestData = false;
+					for (auto& element : estiaSerial.sensorData) {
+						Serial.printf("%s :", element.first);
+						// data is error code skip multiplier
+						if (element.second.value <= EstiaSerial::err_not_exist) {
+							Serial.print(element.second.value);
+						} else {
+							Serial.print(element.second.value * element.second.multiplier);
+						}
+						Serial.println();
+					}
 				}
-				Serial.println();
+				requestDataTimer = millis();
 			}
-		}
+			break;
 	}
 }
 
