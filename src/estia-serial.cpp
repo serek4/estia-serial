@@ -31,6 +31,7 @@ EstiaSerial::EstiaSerial(uint8_t rxPin, uint8_t txPin)
     , txPin(txPin)
     , requestDone(false)
     , requestCounter(0)
+    , requestRetry(0)
     , snifferBuffer()
     , snifferStream(emptyString)
     , newStatusData(false)
@@ -114,13 +115,11 @@ bool EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest) {
 	}
 	std::string req = sensorsToRequest.at(requestCounter);
 	int16_t res = requestData(req);
-	if (res <= err_timeout) {
-		for (uint8_t ret = 0; ret < REQUEST_RETRIES; ret++) {    // request retries
-			delay(REQUEST_RETRY_DELAY);
-			res = requestData(req);
-			if (res > err_timeout) { break; }
-		}
+	if (res <= err_timeout && requestRetry < REQUEST_RETRIES) {
+		requestRetry++;
+		return requestDone;    // false
 	}
+	requestRetry = 0;
 	if (sensorData.count(req) == 1) {
 		sensorData.at(req).value = res;
 	} else {

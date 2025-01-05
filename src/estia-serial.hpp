@@ -35,9 +35,8 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define ESTIA_SERIAL_BYTE_DELAY 5     // 4.2 ms minimum for baud 2400
 #define ESTIA_SERIAL_READ_DELAY 55    // minimum valid frame is 13 Bytes so min 54.6ms between frames
 
-#define REQUEST_RETRIES 1
-#define REQUEST_TIMEOUT 250
-#define REQUEST_RETRY_DELAY 15
+#define REQUEST_RETRIES 2
+#define REQUEST_TIMEOUT 200
 
 struct SensorData {
 	SensorData(int16_t value, const float multiplier);
@@ -53,6 +52,7 @@ class EstiaSerial {
 	int8_t txPin;
 	bool requestDone;
 	uint8_t requestCounter;
+	uint8_t requestRetry;
 	ReadBuffer snifferBuffer;
 	String snifferStream;
 	StatusData statusData;
