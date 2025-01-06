@@ -51,11 +51,7 @@ EstiaSerial::SnifferState EstiaSerial::sniffer() {
 		readTimer = millis();
 		this->read(snifferBuffer);
 		if (snifferBuffer.size() > 0 && snifferBuffer.front() == FRAME_BEGIN) {
-			if (EstiaFrame::isStatusFrame(snifferBuffer) || EstiaFrame::isStatusUpdateFrame(snifferBuffer)) {
-				StatusFrame statusFrame(snifferBuffer, snifferBuffer.size());
-				statusData = statusFrame.decode();
-				newStatusData = true;
-			}
+			decodeStatus(snifferBuffer);
 		}
 		if (this->snifferFrameStringify()) {
 			return sniff_new_frame;
@@ -72,6 +68,22 @@ String EstiaSerial::getFrame() {
 		sniffedFrames.pop_front();
 	}
 	return frame;
+}
+
+void EstiaSerial::decodeStatus(ReadBuffer buffer) {
+	if (buffer.size() > FRAME_STATUS_LEN) { buffer.resize(FRAME_STATUS_LEN); }
+	bool isStatusFrame = EstiaFrame::isStatusFrame(buffer);
+
+	if (!isStatusFrame && buffer.size() > FRAME_UPDATE_LEN) { buffer.resize(FRAME_UPDATE_LEN); }
+	bool isUpdateFrame = EstiaFrame::isStatusUpdateFrame(buffer);
+
+	if (isStatusFrame || isUpdateFrame) {
+		StatusFrame statusFrame(buffer, buffer.size());
+		if (statusFrame.error == StatusFrame::err_ok) {
+			statusData = statusFrame.decode();
+			newStatusData = true;
+		}
+	}
 }
 
 StatusData& EstiaSerial::getStatusData() {

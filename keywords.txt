@@ -23,6 +23,7 @@ TemperatureFrame   KEYWORD1
 begin  KEYWORD2
 sniffer  KEYWORD2
 getFrame  KEYWORD2
+decodeStatus  KEYWORD2
 requestData  KEYWORD2
 requestJsonData  KEYWORD2
 modeSwitch  KEYWORD2

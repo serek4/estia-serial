@@ -64,6 +64,7 @@ class EstiaSerial {
 	void modeSwitch(std::string mode, uint8_t onOff);
 	void operationSwitch(std::string operation, uint8_t onOff);
 	bool snifferFrameStringify();
+	void decodeStatus(ReadBuffer buffer);
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
 	void write(const EstiaFrame& frame, bool disableRx = true);
 	void read(ReadBuffer& buffer, bool byteDelay = true);
