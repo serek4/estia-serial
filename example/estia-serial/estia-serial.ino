@@ -9,8 +9,9 @@
 #endif
 
 EstiaSerial estiaSerial(ESTIA_SERIAL_RX, ESTIA_SERIAL_TX);
-u_long requestDataTimer = 0;
 u_long requestDataOffInterval = 300000;    // data update interval when heat pump is doing nothing
+u_long requestDataTimer = requestDataOffInterval;
+u_long requestNextTimer = 0;
 u_long requestDataDelay = ESTIA_SERIAL_READ_DELAY;
 bool requestData = false;
 
@@ -34,13 +35,14 @@ void loop() {
 					if (data.pump1 ||                                                      // when pump1 is on every 30s
 					    millis() - requestDataTimer >= requestDataOffInterval - 1000) {    // when pump1 is off every 5min
 						requestDataTimer = millis();
+						requestNextTimer = millis();
 						requestData = true;
 					}
 				}
 			}
 			break;
 		case EstiaSerial::sniff_idle:
-			if (requestData && millis() - requestDataTimer >= requestDataDelay) {
+			if (requestData && millis() - requestNextTimer >= requestDataDelay) {
 				if (estiaSerial.requestSensorsData()) {    // request update for all data points
 				// if (estiaSerial.requestSensorsData({"twi", "two", "wf"})) {    // request update for chosen data points
 					requestData = false;
@@ -55,7 +57,7 @@ void loop() {
 						Serial.println();
 					}
 				}
-				requestDataTimer = millis();
+				requestNextTimer = millis();
 			}
 			break;
 	}
