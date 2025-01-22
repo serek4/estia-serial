@@ -46,6 +46,7 @@ fe - broadcast ?
 03 c4 - mode change
 00 41 - operation switch
 03 c1 - temperature change
+00 15 - force defrost
 00 80 - data request
 00 ef - data response
 00 a1 - ack
@@ -170,6 +171,16 @@ command `8c = 04 | 88` value   `0c = 04 | 08`
 
 ```
 a0 00 11 0b 00 00 40 08 00 03 c4 8c 0c 00 00 dd 9d    -> combined quiet mode activate + night mode deactivate
+```
+## `16` bytes
+### force defrost
+
+command byte `12`  
+value byte `13`  
+
+```
+a0 00 11 0a 00 00 40 08 00 00 15 00 46 01 e7 25       -> on,              command 0x46, value 0x01
+a0 00 11 0a 00 00 40 08 00 00 15 00 46 00 f6 ac       -> off,             command 0x46, value 0x00
 ```
 ## `18` bytes
 

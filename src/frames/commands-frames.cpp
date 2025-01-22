@@ -113,3 +113,12 @@ uint8_t TemperatureFrame::constrainTemp(uint8_t temperature) {
 uint8_t TemperatureFrame::convertTemp(uint8_t temperature) {
 	return (temperature + 16) * 2;
 }
+
+ForcedDefrostFrame::ForcedDefrostFrame(uint8_t onOff)
+    : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_FORCE_DEFROST_LEN)
+    , onOff(onOff) {
+	uint8_t emptyRequest[] = {FORCE_DEFROST_BASE};
+	insertData(emptyRequest, false);
+	setByte(FORCE_DEFROST_CODE_OFFSET, FORCE_DEFROST_CODE, false);
+	setByte(FORCE_DEFROST_VALUE_OFFSET, this->onOff);
+}

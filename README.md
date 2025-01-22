@@ -20,7 +20,6 @@ Code is written to work on Arduino esp32 or Arduino esp8266.
 - hot water boost
 - anti bacteria
 - frost protection
-- forced defrost
 - commands ack
 
 ## Config
@@ -49,6 +48,14 @@ temperature: for heating `20-65`, for hot water `40-75`
 
 ```c++
 estiaSerial.setTemperature(std::string zone, uint8_t temperature);
+```
+## Force defrost
+
+Force defrost on next operation start (heating or hot water).
+onOff: `1` | `0`
+
+```c++
+estiaSerial.forceDefrost(uint8_t onOff);
 ```
 ## Request data
 

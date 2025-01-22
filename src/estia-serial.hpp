@@ -101,4 +101,5 @@ class EstiaSerial {
 	bool requestSensorsData(DataToRequest& sensorsToRequest);
 	void setMode(std::string mode, uint8_t onOff);
 	void setTemperature(std::string zone, uint8_t temperature);
+	void forceDefrost(uint8_t onOff);
 };

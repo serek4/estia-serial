@@ -15,6 +15,7 @@ SetModeFrame   KEYWORD1
 SwitchFrame   KEYWORD1
 StatusFrame   KEYWORD1
 TemperatureFrame   KEYWORD1
+ForcedDefrostFrame   KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -30,6 +31,7 @@ modeSwitch  KEYWORD2
 operationSwitch  KEYWORD2
 setMode  KEYWORD2
 setTemperature  KEYWORD2
+forceDefrost  KEYWORD2
 
 crc16  KEYWORD2
 setByte  KEYWORD2

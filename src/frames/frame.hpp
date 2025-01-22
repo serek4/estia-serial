@@ -48,6 +48,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_RES_DATA_DATA_LEN 0x0d
 #define FRAME_STATUS_DATA_LEN 0x19
 #define FRAME_UPDATE_DATA_LEN 0x0f
+#define FRAME_FORCE_DEFROST_DATA_LEN 0x0a
 
 #define FRAME_MIN_LEN FRAME_HEAD_AND_CRC_LEN + FRAME_MIN_DATA_LEN
 #define FRAME_HEARTBEAT_LEN 13
@@ -58,6 +59,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_RES_DATA_LEN 19
 #define FRAME_STATUS_LEN 31
 #define FRAME_UPDATE_LEN 21
+#define FRAME_FORCE_DEFROST_LEN 16
 
 using ReadBuffer = std::deque<uint8_t>;
 using FrameBuffer = std::vector<uint8_t>;

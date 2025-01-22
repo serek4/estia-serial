@@ -124,3 +124,22 @@ class TemperatureFrame : public EstiaFrame {
   public:
 	TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature);
 };
+
+#define FORCE_DEFROST_CODE_OFFSET 12
+#define FORCE_DEFROST_VALUE_OFFSET 13
+#define FORCE_DEFROST_BASE 0x00, 0x00, 0x40, 0x08, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00
+
+#define FORCE_DEFROST_CODE 0x46
+
+// force defrost
+// a0 00 11 0a 00 00 40 08 00 00 15 00 46 01 e7 25 -> on,  command 0x46, value 0x01
+// a0 00 11 0a 00 00 40 08 00 00 15 00 46 00 f6 ac -> off, command 0x46, value 0x00
+
+class ForcedDefrostFrame : public EstiaFrame {
+  private:
+	uint8_t code;
+	uint8_t onOff;
+
+  public:
+	ForcedDefrostFrame(uint8_t onOff);
+};

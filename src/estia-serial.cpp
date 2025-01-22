@@ -213,6 +213,17 @@ void EstiaSerial::setTemperature(std::string zone, uint8_t temperature) {
 	this->write(temperatureFrame, false);
 }
 
+/** Force defrost on next operation start (heating or hot water).
+*
+* If heating or hot water is in progress turn off and on operation
+* for defrost to start now
+* @param onOff `1` `0`
+*/
+void EstiaSerial::forceDefrost(uint8_t onOff) {
+	ForcedDefrostFrame defrostFrame(onOff);
+	this->write(defrostFrame, false);
+}
+
 void EstiaSerial::write(const uint8_t* buffer, uint8_t len, bool disableRx) {
 	digitalWrite(LED_BUILTIN, LOW);
 	if (disableRx) {
