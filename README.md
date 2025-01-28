@@ -6,6 +6,20 @@ Hardware adapter for adjusting Toshiba AB protocol to 3.3V is taken from @issali
 [toshiba air conditioners project](https://github.com/issalig/toshiba_air_cond?tab=readme-ov-file#custom-hardware).  
 **Note that `A` should by connected to positive and `B` to negative.**  
 
+### Schematic
+
+<div style = "max-width: 800px">
+	<img src="images/schematic.png" width ="100%"> </br>
+</div>
+
+
+### Board
+
+Board is designed to fit on a 4x6cm prototype board.
+<div style = "max-width: 800px">
+	<img src="images/board-top.png" width ="49.7%"> <img src="images/board-bottom.png" width ="49.7%">
+</div>
+
 ## Microcontroller
 
 Code is written to work on Arduino esp32 or Arduino esp8266.
