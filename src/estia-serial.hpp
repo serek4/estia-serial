@@ -66,7 +66,6 @@ class EstiaSerial {
 	bool snifferFrameStringify();
 	void decodeStatus(ReadBuffer buffer);
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
-	void write(const EstiaFrame& frame, bool disableRx = true);
 	void read(ReadBuffer& buffer, bool byteDelay = true);
 	uint16_t crc_16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
 
@@ -102,4 +101,6 @@ class EstiaSerial {
 	void setMode(std::string mode, uint8_t onOff);
 	void setTemperature(std::string zone, uint8_t temperature);
 	void forceDefrost(uint8_t onOff);
+	void write(const FrameBuffer& frame, bool disableRx = true);
+	void write(const EstiaFrame& frame, bool disableRx = true);
 };

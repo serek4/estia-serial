@@ -32,6 +32,7 @@ operationSwitch  KEYWORD2
 setMode  KEYWORD2
 setTemperature  KEYWORD2
 forceDefrost  KEYWORD2
+write  KEYWORD2
 
 crc16  KEYWORD2
 setByte  KEYWORD2
