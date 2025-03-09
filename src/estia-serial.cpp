@@ -33,7 +33,7 @@ EstiaSerial::EstiaSerial(uint8_t rxPin, uint8_t txPin)
     , requestCounter(0)
     , requestRetry(0)
     , snifferBuffer()
-    , snifferStream(emptyString)
+    , sniffedFrame()
     , sniffedFrames()
     , newStatusData(false)
     , statusData()
@@ -50,20 +50,20 @@ EstiaSerial::SnifferState EstiaSerial::sniffer() {
 	if (millis() - readTimer > ESTIA_SERIAL_READ_DELAY) {    // throttle serial read
 		readTimer = millis();
 		this->read(snifferBuffer);
-		if (snifferBuffer.size() > 0 && snifferBuffer.front() == FRAME_BEGIN) {
+		if (!snifferBuffer.empty() && snifferBuffer.front() == FRAME_BEGIN) {
 			decodeStatus(snifferBuffer);
 		}
-		if (this->snifferFrameStringify()) {
+		if (this->splitSnifferBuffer()) {
 			return sniff_new_frame;
 		}
 	}
-	if (sniffedFrames.size() > 0) { return sniff_pending_frame; }
-	return snifferBuffer.size() > 0 || serial->available() ? sniff_busy : sniff_idle;
+	if (!sniffedFrames.empty()) { return sniff_pending_frame; }
+	return !snifferBuffer.empty() || serial->available() ? sniff_busy : sniff_idle;
 }
 
-String EstiaSerial::getFrame() {
-	String frame = emptyString;
-	if (sniffedFrames.size() > 0) {
+FrameBuffer EstiaSerial::getSniffedFrame() {
+	FrameBuffer frame;
+	if (!sniffedFrames.empty()) {
 		frame = sniffedFrames.front();
 		sniffedFrames.pop_front();
 	}
@@ -91,20 +91,18 @@ StatusData& EstiaSerial::getStatusData() {
 	return statusData;
 }
 
-bool EstiaSerial::snifferFrameStringify() {
+bool EstiaSerial::splitSnifferBuffer() {
 	if (snifferBuffer.size() >= FRAME_MIN_LEN) {
-		while (snifferBuffer.size() > 0) {
-			if (snifferStream != emptyString && snifferBuffer.size() >= 2 && snifferBuffer.front() == 0xa0 && snifferBuffer.at(1) == 0x00) {
-				// next frame began in snifferBuffer
+		while (!snifferBuffer.empty()) {
+			if (!sniffedFrame.empty() && snifferBuffer.size() >= 2 && snifferBuffer.front() == 0xa0 && snifferBuffer.at(1) == 0x00) {
+				// next frame has already begun in snifferBuffer
 				break;
 			}
-			if (snifferBuffer.front() < 0x10) { snifferStream += "0"; }
-			snifferStream += String(snifferBuffer.front(), HEX) + " ";
+			sniffedFrame.push_back(snifferBuffer.front());
 			snifferBuffer.pop_front();
 		}
-		snifferStream.trim();
-		sniffedFrames.push_back(snifferStream);
-		snifferStream = emptyString;
+		sniffedFrames.push_back(sniffedFrame);
+		sniffedFrame.clear();
 		return true;
 	}
 	return false;

@@ -85,13 +85,17 @@ bool EstiaFrame::insertData(uint8_t* data, bool updateCrc) {
 }
 
 String EstiaFrame::stringify(EstiaFrame* frame) {
-	String stringifyFrame = "";
-	for (auto& byte : frame->buffer) {
-		if (byte < 0x10) { stringifyFrame += "0"; }
-		stringifyFrame += String(byte, HEX) + " ";
+	return stringify(frame->buffer);
+}
+
+String EstiaFrame::stringify(const FrameBuffer& buffer) {
+	String stringifyBuffer = "";
+	for (auto& byte : buffer) {
+		if (byte < 0x10) { stringifyBuffer += "0"; }
+		stringifyBuffer += String(byte, HEX) + " ";
 	}
-	stringifyFrame.trim();
-	return stringifyFrame;
+	stringifyBuffer.trim();
+	return stringifyBuffer;
 }
 
 // https://gist.github.com/aurelj/270bb8af82f65fa645c1?permalink_comment_id=2884584#gistcomment-2884584
@@ -111,7 +115,7 @@ uint16_t EstiaFrame::crc16(uint8_t* data, size_t len) {
 	return crc;
 }
 
-FrameBuffer EstiaFrame::readBuffToFrameBuff(ReadBuffer& buffer) {
+FrameBuffer EstiaFrame::readBuffToFrameBuff(const ReadBuffer& buffer) {
 	FrameBuffer frameBuffer;
 	for (auto& byte : buffer) {
 		frameBuffer.push_back(byte);

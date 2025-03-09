@@ -85,8 +85,9 @@ class EstiaFrame {
 	uint8_t* getBuffer();
 	void updateCrc();
 	bool insertData(uint8_t* data, bool updateCrc = true);
-	String stringify(EstiaFrame* frame);
-	static FrameBuffer readBuffToFrameBuff(ReadBuffer& buffer);
+	static String stringify(EstiaFrame* frame);
+	static String stringify(const FrameBuffer& buffer);
+	static FrameBuffer readBuffToFrameBuff(const ReadBuffer& buffer);
 	static bool isStatusFrame(const ReadBuffer& buffer);
 	static bool isStatusUpdateFrame(const ReadBuffer& buffer);
 };

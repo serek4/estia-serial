@@ -177,13 +177,16 @@ if (estiaSerial.requestSensorsData({"twi", "two", "wf"})) {
 
 ## Sniff communication
 
-Sniffer returns raw frames in hex e.g. `a0 00 10 07 00 08 00 00 fe 00 8a 75 05`
+To get sniffed frame call `EstiaSerial::getSniffedFrame()`, this method returns FrameBuffer(std:vector)  
+e.g. `{0xa0, 0x00, 0x10, 0x07, 0x00, 0x08, 0x00, 0x00, 0xfe, 0x00, 0x8a, 0x75, 0x05`.  
+There is helper `EstiaFrame::stringify(const FrameBuffer& buffer)` to stringify data to hex string  
+e.g. `a0 00 10 07 00 08 00 00 fe 00 8a 75 05`
 
 ```c++
 switch (estiaSerial.sniffer()) {
 	case EstiaSerial::sniff_new_frame:
 	case EstiaSerial::sniff_pending_frame:
-		Serial.println(estiaSerial.getFrame());
+		Serial.println(EstiaFrame::stringify(estiaSerial.getSniffedFrame()));
 		break;
 }
 ```

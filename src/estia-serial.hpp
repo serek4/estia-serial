@@ -46,7 +46,7 @@ struct SensorData {
 };
 using DataToRequest = std::vector<std::string>;
 using EstiaData = std::map<std::string, SensorData>;
-using SniffedFrames = std::deque<String>;
+using SniffedFrames = std::deque<FrameBuffer>;
 
 class EstiaSerial {
   private:
@@ -56,14 +56,14 @@ class EstiaSerial {
 	uint8_t requestCounter;
 	uint8_t requestRetry;
 	ReadBuffer snifferBuffer;
-	String snifferStream;
+	FrameBuffer sniffedFrame;
 	SniffedFrames sniffedFrames;
 	StatusData statusData;
 
 	SoftwareSerial* serial;
 	void modeSwitch(std::string mode, uint8_t onOff);
 	void operationSwitch(std::string operation, uint8_t onOff);
-	bool snifferFrameStringify();
+	bool splitSnifferBuffer();
 	void decodeStatus(ReadBuffer buffer);
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
 	void read(ReadBuffer& buffer, bool byteDelay = true);
@@ -92,7 +92,7 @@ class EstiaSerial {
 
 	void begin();
 	SnifferState sniffer();
-	String getFrame();
+	FrameBuffer getSniffedFrame();
 	StatusData& getStatusData();
 	int16_t requestData(uint8_t requestCode);
 	int16_t requestData(std::string request);
