@@ -37,7 +37,7 @@ EstiaSerial::EstiaSerial(uint8_t rxPin, uint8_t txPin)
     , sniffedFrames()
     , newStatusData(false)
     , statusData()
-    , sensorData() {
+    , sensorsData() {
 }
 
 void EstiaSerial::begin() {
@@ -129,8 +129,13 @@ int16_t EstiaSerial::requestData(std::string request) {
 	return err_not_exist;
 }
 
-bool EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest) {
+void EstiaSerial::clearSensorsData() {
+	sensorsData.clear();
+}
+
+bool EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest, bool clear) {
 	if (requestDone) {
+		if (clear) { clearSensorsData(); }
 		requestDone = false;
 		requestCounter = 0;
 	}
@@ -141,10 +146,10 @@ bool EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest) {
 		return requestDone;    // false
 	}
 	requestRetry = 0;
-	if (sensorData.count(req) == 1) {
-		sensorData.at(req).value = res;
+	if (sensorsData.count(req) == 1) {
+		sensorsData.at(req).value = res;
 	} else {
-		sensorData.emplace(req, SensorData(res, requestsMap.at(req).multiplier));
+		sensorsData.emplace(req, SensorData(res, requestsMap.at(req).multiplier));
 	}
 	if (requestCounter >= sensorsToRequest.size() - 1) {
 		requestCounter = 0;
@@ -155,8 +160,8 @@ bool EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest) {
 	return requestDone;
 }
 
-bool EstiaSerial::requestSensorsData(DataToRequest& sensorsToRequest) {
-	return requestSensorsData(std::forward<DataToRequest>(sensorsToRequest));
+bool EstiaSerial::requestSensorsData(DataToRequest& sensorsToRequest, bool clear) {
+	return requestSensorsData(std::forward<DataToRequest>(sensorsToRequest), clear);
 }
 
 /**

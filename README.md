@@ -106,7 +106,7 @@ data value equal or below `-200` is an error code
 
 ```c++
 if (estiaSerial.requestSensorsData()) {    // request update for all data points
-	for (auto& element : estiaSerial.sensorData) {
+	for (auto& element : estiaSerial.sensorsData) {
 		Serial.printf("%s :", element.first);
 		// data is error code skip multiplier
 		if (element.second.value <= EstiaSerial::err_not_exist) {
@@ -121,8 +121,8 @@ if (estiaSerial.requestSensorsData()) {    // request update for all data points
 It is possible to update only few sensors.
 
 ```c++
-if (estiaSerial.requestSensorsData({"twi", "two", "wf"})) {
-	for (auto& element : estiaSerial.sensorData) {    // request update for chosen data points
+if (estiaSerial.requestSensorsData({"twi", "two", "wf"}, true)) {
+	for (auto& element : estiaSerial.sensorsData) {    // request update for chosen data points
 		Serial.printf("%s :", element.first);
 		// data is error code skip multiplier
 		if (element.second.value <= EstiaSerial::err_not_exist) {

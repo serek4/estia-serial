@@ -58,6 +58,7 @@ sniffer  KEYWORD2
 getSniffedFrame  KEYWORD2
 getStatusData  KEYWORD2
 requestData  KEYWORD2
+clearSensorsData  KEYWORD2
 requestSensorsData  KEYWORD2
 setMode  KEYWORD2
 setTemperature  KEYWORD2

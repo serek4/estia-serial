@@ -44,9 +44,9 @@ void loop() {
 			// to avoid data collisions send commands and data request here
 			if (requestData && millis() - requestNextTimer >= requestDataDelay) {
 				if (estiaSerial.requestSensorsData()) {    // request update for all data points
-				// if (estiaSerial.requestSensorsData({"twi", "two", "wf"})) {    // request update for chosen data points
+				// if (estiaSerial.requestSensorsData({"twi", "two", "wf"}), true) {    // request update for chosen data points
 					requestData = false;
-					for (auto& element : estiaSerial.sensorData) {
+					for (auto& element : estiaSerial.sensorsData) {
 						Serial.printf("%s :", element.first);
 						// data is error code skip multiplier
 						if (element.second.value <= EstiaSerial::err_not_exist) {
