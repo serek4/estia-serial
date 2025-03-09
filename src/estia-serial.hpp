@@ -81,8 +81,7 @@ class EstiaSerial {
 	enum SnifferState {
 		sniff_idle,
 		sniff_busy,
-		sniff_new_frame,
-		sniff_pending_frame,
+		sniff_frame_pending,
 	};
 
 	EstiaSerial(uint8_t rxPin, uint8_t txPin);

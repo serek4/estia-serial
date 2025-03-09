@@ -184,8 +184,7 @@ e.g. `a0 00 10 07 00 08 00 00 fe 00 8a 75 05`
 
 ```c++
 switch (estiaSerial.sniffer()) {
-	case EstiaSerial::sniff_new_frame:
-	case EstiaSerial::sniff_pending_frame:
+	case EstiaSerial::sniff_frame_pending:
 		Serial.println(EstiaFrame::stringify(estiaSerial.getSniffedFrame()));
 		break;
 }

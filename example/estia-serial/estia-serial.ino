@@ -24,8 +24,7 @@ void setup() {
 
 void loop() {
 	switch (estiaSerial.sniffer()) {
-		case EstiaSerial::sniff_new_frame:
-		case EstiaSerial::sniff_pending_frame:
+		case EstiaSerial::sniff_frame_pending:
 			Serial.println(EstiaFrame::stringify(estiaSerial.getSniffedFrame()));
 			if (estiaSerial.newStatusData) {
 				StatusData data = estiaSerial.getStatusData();

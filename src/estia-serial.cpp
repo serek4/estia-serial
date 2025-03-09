@@ -53,11 +53,9 @@ EstiaSerial::SnifferState EstiaSerial::sniffer() {
 		if (!snifferBuffer.empty() && snifferBuffer.front() == FRAME_BEGIN) {
 			decodeStatus(snifferBuffer);
 		}
-		if (this->splitSnifferBuffer()) {
-			return sniff_new_frame;
-		}
+		this->splitSnifferBuffer();
 	}
-	if (!sniffedFrames.empty()) { return sniff_pending_frame; }
+	if (!sniffedFrames.empty()) { return sniff_frame_pending; }
 	return !snifferBuffer.empty() || serial->available() ? sniff_busy : sniff_idle;
 }
 
