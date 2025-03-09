@@ -7,13 +7,38 @@
 # Data Types (KEYWORD1)
 #######################################
 
+SensorData   KEYWORD1
+DataToRequest   KEYWORD1
+EstiaData   KEYWORD1
+SniffedFrames   KEYWORD1
 EstiaSerial   KEYWORD1
+ResponseError   KEYWORD1
+SnifferState   KEYWORD1
+
+ReadBuffer   KEYWORD1
+FrameBuffer   KEYWORD1
 EstiaFrame   KEYWORD1
-DataReqFrame   KEYWORD1
-DataResFrame   KEYWORD1
-SetModeFrame   KEYWORD1
-SwitchFrame   KEYWORD1
+
+StatusData   KEYWORD1
 StatusFrame   KEYWORD1
+StatusError   KEYWORD1
+
+DataReqFrame   KEYWORD1
+
+RequestData   KEYWORD1
+RequestsMap   KEYWORD1
+DataReqFrame   KEYWORD1
+RequestCode   KEYWORD1
+RequestsMap   KEYWORD1
+DataResFrame   KEYWORD1
+DataError   KEYWORD1
+
+ModeByName   KEYWORD1
+ModeByName   KEYWORD1
+SetModeFrame   KEYWORD1
+SwitchOperationByName   KEYWORD1
+SwitchFrame   KEYWORD1
+TemperatureByName   KEYWORD1
 TemperatureFrame   KEYWORD1
 ForcedDefrostFrame   KEYWORD1
 
@@ -21,23 +46,27 @@ ForcedDefrostFrame   KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
+modeSwitch  KEYWORD2
+operationSwitch  KEYWORD2
+snifferFrameStringify  KEYWORD2
+decodeStatus  KEYWORD2
+write  KEYWORD2
+read  KEYWORD2
+crc_16  KEYWORD2
 begin  KEYWORD2
 sniffer  KEYWORD2
 getFrame  KEYWORD2
-decodeStatus  KEYWORD2
+getStatusData  KEYWORD2
 requestData  KEYWORD2
-requestJsonData  KEYWORD2
-modeSwitch  KEYWORD2
-operationSwitch  KEYWORD2
+requestSensorsData  KEYWORD2
 setMode  KEYWORD2
 setTemperature  KEYWORD2
 forceDefrost  KEYWORD2
-write  KEYWORD2
 
 crc16  KEYWORD2
 setByte  KEYWORD2
 getByte  KEYWORD2
-getButter  KEYWORD2
+getBuffer  KEYWORD2
 updateCrc  KEYWORD2
 insertData  KEYWORD2
 stringify  KEYWORD2
@@ -46,11 +75,12 @@ isStatusFrame  KEYWORD2
 isStatusUpdateFrame  KEYWORD2
 
 checkFrame  KEYWORD2
+decode  KEYWORD2
 
 modeOnOff  KEYWORD2
 operationOnOff  KEYWORD2
-
-decode  KEYWORD2
+constrainTemp  KEYWORD2
+convertTemp  KEYWORD2
 
 #######################################
 # (KEYWORD3)

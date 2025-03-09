@@ -68,27 +68,27 @@ a0 00 58 19 00 08 00 00 fe 03 c6 c0 00 00 76 5a 7a 76 5a 7a 00 00 00 00 00 e9 5d
                                  || || || || || || || || ||    ||             || ^^ 27 - TWI (0x68 / 0x02 - 0x10) ?
                                  || || || || || || || || ||    ||             ^^ 26 - TWO (0x58 / 0x02 - 0x10) ?
                                  || || || || || || || || ||    ^^ 21 - +0x02 defrost in progress, +0x10 night mode active
-                                 || || || || || || || || ^^ 19 - follow set zone 2 temperature, actual target temperature (including night setback) ?
-                                 || || || || || || || ^^ 18 - follow set zone 1 temperature, actual target temperature (including night setback) ?
-                                 || || || || || || ^^ 17 - follow set hot water temperature, actual target temperature ?
-                                 || || || || || ^^ 16 - set zone 2 temperature 0x7a / 0x02 - 0x10 ?
-                                 || || || || ^^ 15 - set zone1 temperature 0x60 / 0x02 - 0x10
-                                 || || || ^^ 14 - set hot water temperature 0x76 / 0x02 - 0x10
+                                 || || || || || || || || ^^ 19 - follow zone 2 temperature, actual target temperature (including night setback)
+                                 || || || || || || || ^^ 18 - follow zone 1 temperature, actual target temperature (including night setback)
+                                 || || || || || || ^^ 17 - follow hot water temperature, actual target temperature (including boost) ?
+                                 || || || || || ^^ 16 - zone 2 temperature 0x7a / 0x02 - 0x10 ?
+                                 || || || || ^^ 15 - zone1 temperature 0x60 / 0x02 - 0x10
+                                 || || || ^^ 14 - hot water temperature 0x76 / 0x02 - 0x10
                                  || || ^^ 13 - 0x00 -> off, +0x01 backup e-heater, +0x02 heating cmp on, +0x04 HW e-heater, +0x08 HW cmp on, +0x10 -> pump1 on
                                  || ^^ 12 - 0x00 off, +0x04 auto mode on, +0x10 quiet on, +0x20 night on
-                                 ^^ 11 - c0 all off, c1 heating on, c2 hot water on, c3 heating + hot water
+                                 ^^ 11 - 0xc0 all off, +0x01 heating on, +0x02 hot water on, 0xc3 heating + hot water
 ```
 ## status update frame, `21` bytes
 ```
 a0 00 1c 0f 00 08 00 00 fe 03 c6 c1 00 12 76 60 7a 00 00 15 4c
 a0 00 1c 0f 00 08 00 00 fe 03 c6 c0 20 00 76 5a 7a 10 00 b8 5b
                                  || || || || || || ^^ 17 - +0x02 defrost in progress, +0x10 night mode active
-                                 || || || || || ^^ 16 - set zone 2 temperature 0x7a / 0x02 - 0x10 ?
-                                 || || || || ^^ 15 - set zone1 temperature 0x60 / 0x02 - 0x10
-                                 || || || ^^ 14 - set hot water temperature 0x76 / 0x02 - 0x10
+                                 || || || || || ^^ 16 - zone 2 temperature 0x7a / 0x02 - 0x10 ?
+                                 || || || || ^^ 15 - zone1 temperature 0x60 / 0x02 - 0x10
+                                 || || || ^^ 14 - hot water temperature 0x76 / 0x02 - 0x10
                                  || || ^^ 13 - 0x00 -> off, +0x01 backup e-heater, +0x02 heating cmp on, +0x04 HW e-heater, +0x08 HW cmp on, +0x10 -> pump1 on
                                  || ^^ 12 - 0x00 off, +0x04 auto mode on, +0x10 quiet on, +0x20 night on
-                                 ^^ 11 - c0 all off, c1 heating on, c2 hot water on, c3 heating + hot water
+                                 ^^ 11 - 0xc0 all off, +0x01 heating on, +0x02 hot water on, 0xc3 heating + hot water
 ```
 ## ack frame, `15` bytes
 ```
@@ -138,8 +138,8 @@ value byte `12`
 
 ### auto mode off/on
 ```
-a0 00 11 0b 00 00 40 08 00 03 c4 01 00 00 00 de df    -> on,              command 0x01, value 0x01
-a0 00 11 0b 00 00 40 08 00 03 c4 01 01 00 00 84 03    -> off,             command 0x01, value 0x00
+a0 00 11 0b 00 00 40 08 00 03 c4 01 01 00 00 84 03    -> on,              command 0x01, value 0x01
+a0 00 11 0b 00 00 40 08 00 03 c4 01 00 00 00 de df    -> off,             command 0x01, value 0x00
 ```
 ### quiet mode on/off (glitched)
 
@@ -201,6 +201,8 @@ a0 00 11 0c 00 00 40 08 00 03 c1 08 00 00 70 00 83 c0 -> command 0x08, value off
 ```
 ## `21` bytes
 ### request data
+
+requested data code byte `17`  
 ```
-a0 00 17 0f 00 00 40 08 00 00 80 00 ef 00 2c 08 00 07 00 35 98 -> request data by code, offset 17 value 0x00 - 0xff
+a0 00 17 0f 00 00 40 08 00 00 80 00 ef 00 2c 08 00 07 00 35 98 -> request data, code offset 17, value = 0x00 - 0xff
 ```

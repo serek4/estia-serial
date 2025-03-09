@@ -19,8 +19,8 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #pragma once
 
 #include "config.h"
-#include "frames/data-frames.hpp"
 #include "frames/commands-frames.hpp"
+#include "frames/data-frames.hpp"
 #include "frames/status-frames.hpp"
 #include <SoftwareSerial.h>
 #include <deque>

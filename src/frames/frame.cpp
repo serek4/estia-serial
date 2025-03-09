@@ -28,7 +28,7 @@ EstiaFrame::EstiaFrame(FrameBuffer&& buffer, uint8_t length)
 	if (length < FRAME_MIN_LEN) {    // ensure minimum buffer size
 		this->length = FRAME_MIN_LEN;
 	}
-	this->buffer.resize(this->length, 0x00); // resize to proper length
+	this->buffer.resize(this->length, 0x00);    // resize to proper length
 	type = this->buffer.at(FRAME_TYPE_OFFSET);
 	dataLength = this->buffer.at(FRAME_DATA_LEN_OFFSET);
 	crc = (this->buffer.at(this->length - 2) << 8) | this->buffer.at(this->length - 1);

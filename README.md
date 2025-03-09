@@ -17,7 +17,7 @@ Hardware adapter for adjusting Toshiba AB protocol to 3.3V is taken from @issali
 
 Board is designed to fit on a 4x6cm prototype board.
 <div style = "max-width: 800px">
-	<img src="images/board-top.png" width ="49.7%"> <img src="images/board-bottom.png" width ="49.7%">
+	<img src="images/board-top.png" width ="49%"> <img src="images/board-bottom.png" width ="49%">
 </div>
 
 ## Microcontroller
@@ -28,12 +28,24 @@ Code is written to work on Arduino esp32 or Arduino esp8266.
 - Arduino core ([esp32](https://github.com/espressif/arduino-esp32) or [esp8266](https://github.com/esp8266/Arduino))
 - [EspSoftwareSerial](https://github.com/plerup/espsoftwareserial)
 
-## Missing features
+## Implemented features
+- heating on-off
+- hot water on-off
+- auto mode on-off
+- quiet mode on-off
+- night mode on-off
+- forced defrost on-off
+- heating temperature change
+- hot water temperature change
+- data requests
+
+## To do
 - cooling
 - zone 2
 - hot water boost
 - anti bacteria
 - frost protection
+- errors history
 - commands ack
 
 ## Config
@@ -83,8 +95,12 @@ estiaSerial.requestData(0x06);     // request data by code
 Default sensors data to request is defined in `config.h` -> `SENSORS_DATA_TO_REQUEST`.  
 Data will be saved to `estiaSerial.sensorData`.
 
-`EstiaData::first` = sensor name  
-`EstiaData::second` = `{ value, multiplier }`  
+Data structure (`std::map`)  
+```c++
+// EstiaData::first = sensorName
+// EstiaData::second = { value, multiplier }
+{ std::string sensorName, { int16_t value, float multiplier }}
+```
 data value equal or below `-200` is an error code
 
 
