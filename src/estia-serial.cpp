@@ -190,7 +190,7 @@ void EstiaSerial::operationSwitch(std::string operation, uint8_t onOff) {
 */
 void EstiaSerial::setMode(std::string mode, uint8_t onOff) {
 	if (modeByName.count(mode) != 0) { modeSwitch(mode, onOff); }
-	if (switchOperationByName.count(mode) == 0) { operationSwitch(mode, onOff); }
+	if (switchOperationByName.count(mode) != 0) { operationSwitch(mode, onOff); }
 }
 
 /**
