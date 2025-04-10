@@ -43,7 +43,7 @@ void loop() {
 			}
 			break;
 		case EstiaSerial::sniff_idle:
-			// to avoid data collisions send commands and data request here
+			// to avoid data collisions write and request data here
 			if (requestData && millis() - requestNextTimer >= requestDataDelay) {
 				if (estiaSerial.requestSensorsData()) {    // request update for all data points
 				// if (estiaSerial.requestSensorsData({"twi", "two", "wf"}), true) {    // request update for chosen data points

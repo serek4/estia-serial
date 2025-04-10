@@ -38,6 +38,10 @@ EstiaSerial::EstiaSerial(uint8_t rxPin, uint8_t txPin)
     , frameAck(0)
     , newStatusData(false)
     , statusData()
+    , cmdSent(false)
+    , cmdQueue()
+    , cmdTimer(0)
+    , cmdRetry(0)
     , sensorsData() {
 }
 
@@ -58,7 +62,9 @@ EstiaSerial::SnifferState EstiaSerial::sniffer() {
 		this->splitSnifferBuffer();
 	}
 	if (!sniffedFrames.empty()) { return sniff_frame_pending; }
-	return !snifferBuffer.empty() || serial->available() ? sniff_busy : sniff_idle;
+	if (!snifferBuffer.empty() || serial->available()) { return sniff_busy; }
+	if (sendCommand()) { return sniff_busy; }
+	return sniff_idle;
 }
 
 FrameBuffer EstiaSerial::getSniffedFrame() {
@@ -98,6 +104,38 @@ void EstiaSerial::decodeAck(ReadBuffer& buffer) {
 	if (ackFrame.error != StatusFrame::err_ok) { return; }
 
 	frameAck = ackFrame.frameCode;
+
+	// command received, remove from queue
+	if (ackFrame.frameCode == cmdQueue.front().dataType) {
+		cmdQueue.pop_front();
+		cmdRetry = 0;
+		cmdSent = false;
+	}
+}
+
+void EstiaSerial::queueCommand(EstiaFrame& command) {
+	if (cmdQueue.size() >= CMD_QUEUE_SIZE) { return; }
+
+	cmdQueue.push_back(command);
+}
+
+bool EstiaSerial::sendCommand() {
+	// clear flag to resend command
+	if (cmdSent && millis() - cmdTimer > CMD_TIMEOUT) {
+		cmdRetry++;
+		if (cmdRetry > CMD_RETRIES) {
+			cmdQueue.pop_front();
+			cmdRetry = 0;
+		}
+		cmdSent = false;
+	}
+	if (!cmdSent && !cmdQueue.empty()) {
+		cmdSent = true;
+		this->write(cmdQueue.front(), false);
+		cmdTimer = millis();
+		return true;
+	}
+	return false;
 }
 
 uint16_t EstiaSerial::getAck() {
@@ -188,7 +226,7 @@ bool EstiaSerial::requestSensorsData(DataToRequest& sensorsToRequest, bool clear
 void EstiaSerial::modeSwitch(std::string mode, uint8_t onOff) {
 	if (modeByName.count(mode) == 0) { return; }
 	SetModeFrame modeFrame(mode, onOff);
-	this->write(modeFrame, false);
+	this->queueCommand(modeFrame);
 }
 
 /**
@@ -198,7 +236,7 @@ void EstiaSerial::modeSwitch(std::string mode, uint8_t onOff) {
 void EstiaSerial::operationSwitch(std::string operation, uint8_t onOff) {
 	if (switchOperationByName.count(operation) == 0) { return; }
 	SwitchFrame switchFrame(operation, onOff);
-	this->write(switchFrame, false);
+	this->queueCommand(switchFrame);
 }
 
 /**
@@ -228,7 +266,7 @@ void EstiaSerial::setTemperature(std::string zone, uint8_t temperature) {
 			break;
 	}
 	TemperatureFrame temperatureFrame(temperatureByName.at(zone), heating, zone2, hotWater);
-	this->write(temperatureFrame, false);
+	this->queueCommand(temperatureFrame);
 }
 
 /** Force defrost on next operation start (heating or hot water).
@@ -239,7 +277,7 @@ void EstiaSerial::setTemperature(std::string zone, uint8_t temperature) {
 */
 void EstiaSerial::forceDefrost(uint8_t onOff) {
 	ForcedDefrostFrame defrostFrame(onOff);
-	this->write(defrostFrame, false);
+	this->queueCommand(defrostFrame);
 }
 
 void EstiaSerial::write(const uint8_t* buffer, uint8_t len, bool disableRx) {

@@ -39,6 +39,10 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define REQUEST_RETRIES 2
 #define REQUEST_TIMEOUT 200
 
+#define CMD_TIMEOUT 1000
+#define CMD_QUEUE_SIZE 10
+#define CMD_RETRIES 2
+
 struct SensorData {
 	SensorData(int16_t value, const float multiplier);
 	int16_t value;
@@ -47,6 +51,7 @@ struct SensorData {
 using DataToRequest = std::vector<std::string>;
 using EstiaData = std::map<std::string, SensorData>;
 using SniffedFrames = std::deque<FrameBuffer>;
+using CommandsQueue = std::deque<EstiaFrame>;
 
 class EstiaSerial {
   private:
@@ -59,6 +64,10 @@ class EstiaSerial {
 	FrameBuffer sniffedFrame;
 	SniffedFrames sniffedFrames;
 	StatusData statusData;
+	bool cmdSent;
+	CommandsQueue cmdQueue;
+	uint32_t cmdTimer;
+	uint8_t cmdRetry;
 
 	SoftwareSerial* serial;
 	void modeSwitch(std::string mode, uint8_t onOff);
@@ -66,6 +75,8 @@ class EstiaSerial {
 	bool splitSnifferBuffer();
 	void decodeStatus(ReadBuffer buffer);
 	void decodeAck(ReadBuffer& buffer);
+	void queueCommand(EstiaFrame& command);
+	bool sendCommand();
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
 	void read(ReadBuffer& buffer, bool byteDelay = true);
 	uint16_t crc_16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
