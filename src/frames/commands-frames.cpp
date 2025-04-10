@@ -24,6 +24,7 @@ SetModeFrame::SetModeFrame(uint8_t mode, uint8_t onOff)
     , onOff(modeOnOff(onOff)) {
 	uint8_t emptyRequest[] = {SET_MODE_BASE};
 	insertData(emptyRequest, false);
+	updateDataType();
 	setByte(SET_MODE_CODE_OFFSET, mode, false);
 	setByte(SET_MODE_VALUE_OFFSET, this->onOff);
 }
@@ -53,6 +54,7 @@ SwitchFrame::SwitchFrame(uint8_t operation, uint8_t onOff)
     , onOff(operationOnOff(onOff)) {
 	uint8_t emptyRequest[] = {SWITCH_BASE};
 	insertData(emptyRequest, false);
+	updateDataType();
 	setByte(SWITCH_VALUE_OFFSET, this->onOff);
 }
 
@@ -80,6 +82,7 @@ TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uin
     , hotWaterTemperature(constrainTemp(hotWaterTemperature)) {
 	uint8_t emptyRequest[] = {TEMPERATURE_BASE};
 	insertData(emptyRequest, false);
+	updateDataType();
 	setByte(TEMPERATURE_CODE_OFFSET, zone, false);
 	switch (zone) {
 		case TEMPERATURE_HEATING_CODE:
@@ -119,6 +122,7 @@ ForcedDefrostFrame::ForcedDefrostFrame(uint8_t onOff)
     , onOff(onOff) {
 	uint8_t emptyRequest[] = {FORCE_DEFROST_BASE};
 	insertData(emptyRequest, false);
+	updateDataType();
 	setByte(FORCE_DEFROST_CODE_OFFSET, FORCE_DEFROST_CODE, false);
 	setByte(FORCE_DEFROST_VALUE_OFFSET, this->onOff);
 }

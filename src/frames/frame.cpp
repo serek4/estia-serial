@@ -24,6 +24,7 @@ EstiaFrame::EstiaFrame(FrameBuffer&& buffer, uint8_t length)
     , buffer(buffer)
     , type(0x00)
     , dataLength(0x00)
+    , dataType(0x0000)
     , crc(0x0000) {
 	if (length < FRAME_MIN_LEN) {    // ensure minimum buffer size
 		this->length = FRAME_MIN_LEN;
@@ -31,6 +32,7 @@ EstiaFrame::EstiaFrame(FrameBuffer&& buffer, uint8_t length)
 	this->buffer.resize(this->length, 0x00);    // resize to proper length
 	type = this->buffer.at(FRAME_TYPE_OFFSET);
 	dataLength = this->buffer.at(FRAME_DATA_LEN_OFFSET);
+	dataType = (this->buffer.at(FRAME_DATA_TYPE_OFFSET) << 8) | this->buffer.at(FRAME_DATA_TYPE_OFFSET + 1);
 	crc = (this->buffer.at(this->length - 2) << 8) | this->buffer.at(this->length - 1);
 }
 
@@ -45,6 +47,7 @@ EstiaFrame::EstiaFrame(uint8_t type, uint8_t length)
     , buffer(length, 0x00)
     , type(type)
     , dataLength(length - FRAME_HEAD_AND_CRC_LEN)
+    , dataType(0x0000)
     , crc(0x0000) {
 	if (length < FRAME_MIN_LEN) {    // ensure minimum buffer size
 		length = FRAME_MIN_LEN;
@@ -96,6 +99,10 @@ String EstiaFrame::stringify(const FrameBuffer& buffer) {
 	}
 	stringifyBuffer.trim();
 	return stringifyBuffer;
+}
+
+void EstiaFrame::updateDataType() {
+	dataType = (this->buffer.at(FRAME_DATA_TYPE_OFFSET) << 8) | this->buffer.at(FRAME_DATA_TYPE_OFFSET + 1);
 }
 
 // https://gist.github.com/aurelj/270bb8af82f65fa645c1?permalink_comment_id=2884584#gistcomment-2884584

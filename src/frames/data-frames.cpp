@@ -28,6 +28,7 @@ DataReqFrame::DataReqFrame(uint8_t requestCode)
     , requestCode(requestCode) {
 	uint8_t blankRequest[dataLength] = {REQ_DATA_BASE};
 	insertData(blankRequest, false);
+	updateDataType();
 	setByte(REQ_DATA_CODE_OFFSET, requestCode);
 }
 
@@ -37,6 +38,7 @@ DataResFrame::DataResFrame(FrameBuffer&& buffer)
     , value(0) {
 	error = checkFrame();
 	if (error == err_ok) {
+		updateDataType();
 		value = (this->buffer.at(RES_DATA_VALUE_OFFSET) << 8) | this->buffer.at(RES_DATA_VALUE_OFFSET + 1);
 	}
 }

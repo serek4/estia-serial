@@ -29,6 +29,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_TYPE_OFFSET 2
 #define FRAME_DATA_LEN_OFFSET 3
 #define FRAME_DATA_OFFSET 4
+#define FRAME_DATA_TYPE_OFFSET 9
 #define FRAME_HEAD_AND_CRC_LEN 6
 
 #define FRAME_TYPE_HEARTBEAT 0x10
@@ -38,6 +39,16 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_TYPE_RES_DATA 0x1a
 #define FRAME_TYPE_UPDATE 0x1c
 #define FRAME_TYPE_STATUS 0x58
+
+#define FRAME_DATA_TYPE_HEARTBEAT 0x008a
+#define FRAME_DATA_TYPE_STATUS 0x03c6
+#define FRAME_DATA_TYPE_MODE_CHANGE 0x03c4
+#define FRAME_DATA_TYPE_OPERATION_SWITCH 0x0041
+#define FRAME_DATA_TYPE_TEMPERATURE_CHANGE 0x03c1
+#define FRAME_DATA_TYPE_FORCE_DEFROST 0x0015
+#define FRAME_DATA_TYPE_DATA_REQUEST 0x0080
+#define FRAME_DATA_TYPE_DATA_RESPONSE 0x00ef
+#define FRAME_DATA_TYPE_ACK 0x00a1
 
 #define FRAME_MIN_DATA_LEN 0x07
 #define FRAME_HEARTBEAT_DATA_LEN 0x07
@@ -70,6 +81,8 @@ class EstiaFrame {
 	uint8_t type;
 	uint8_t dataLength;
 	uint16_t crc;
+
+	void updateDataType();
 	uint16_t crc16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
 
   public:
@@ -79,6 +92,7 @@ class EstiaFrame {
 
 	uint8_t length;
 	FrameBuffer buffer;
+	uint16_t dataType;
 
 	bool setByte(uint8_t position, uint8_t value, bool updateCrc = true);
 	uint8_t getByte(uint8_t position);
