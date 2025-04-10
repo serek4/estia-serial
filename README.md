@@ -46,7 +46,6 @@ Code is written to work on Arduino esp32 or Arduino esp8266.
 - anti bacteria
 - frost protection
 - errors history
-- commands ack
 
 ## Config
 

@@ -35,6 +35,7 @@ EstiaSerial::EstiaSerial(uint8_t rxPin, uint8_t txPin)
     , snifferBuffer()
     , sniffedFrame()
     , sniffedFrames()
+    , frameAck(0)
     , newStatusData(false)
     , statusData()
     , sensorsData() {
@@ -51,6 +52,7 @@ EstiaSerial::SnifferState EstiaSerial::sniffer() {
 		readTimer = millis();
 		this->read(snifferBuffer);
 		if (!snifferBuffer.empty() && snifferBuffer.front() == FRAME_BEGIN) {
+			decodeAck(snifferBuffer);
 			decodeStatus(snifferBuffer);
 		}
 		this->splitSnifferBuffer();
@@ -87,6 +89,21 @@ void EstiaSerial::decodeStatus(ReadBuffer buffer) {
 StatusData& EstiaSerial::getStatusData() {
 	newStatusData = false;
 	return statusData;
+}
+
+void EstiaSerial::decodeAck(ReadBuffer& buffer) {
+	if (!EstiaFrame::isAckFrame(buffer)) { return; }
+
+	AckFrame ackFrame(buffer);
+	if (ackFrame.error != StatusFrame::err_ok) { return; }
+
+	frameAck = ackFrame.frameCode;
+}
+
+uint16_t EstiaSerial::getAck() {
+	uint16_t acked = frameAck;
+	frameAck = 0;
+	return acked;
 }
 
 bool EstiaSerial::splitSnifferBuffer() {

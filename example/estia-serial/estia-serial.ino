@@ -26,7 +26,9 @@ void loop() {
 	switch (estiaSerial.sniffer()) {
 		case EstiaSerial::sniff_frame_pending:
 			Serial.println(EstiaFrame::stringify(estiaSerial.getSniffedFrame()));
-			if (estiaSerial.newStatusData) {
+			if (estiaSerial.frameAck != 0) {
+				Serial.printf("frame 0x%04X acked\n", estiaSerial.getAck());
+			} else if (estiaSerial.newStatusData) {
 				StatusData data = estiaSerial.getStatusData();
 				printStatusData(data);
 				// request sensors data after extended status data received (every 30s)

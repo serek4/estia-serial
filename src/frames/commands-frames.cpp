@@ -126,3 +126,19 @@ ForcedDefrostFrame::ForcedDefrostFrame(uint8_t onOff)
 	setByte(FORCE_DEFROST_CODE_OFFSET, FORCE_DEFROST_CODE, false);
 	setByte(FORCE_DEFROST_VALUE_OFFSET, this->onOff);
 }
+
+AckFrame::AckFrame(ReadBuffer& buffer)
+    : EstiaFrame::EstiaFrame(readBuffToFrameBuff(buffer), FRAME_ACK_LEN) {
+	error = checkFrame();
+	if (error == err_ok) {
+		updateDataType();
+		frameCode = (this->buffer.at(ACK_FRAME_CODE_OFFSET) << 8) | this->buffer.at(ACK_FRAME_CODE_OFFSET + 1);
+	}
+}
+
+uint8_t AckFrame::checkFrame() {
+	if (crc != crc16(buffer.data(), length - 2)) { return err_crc; }
+	if (type != FRAME_TYPE_ACK) { return err_frame_type; }
+	if (dataLength != length - FRAME_HEAD_AND_CRC_LEN) { return err_data_len; }
+	return err_ok;
+}

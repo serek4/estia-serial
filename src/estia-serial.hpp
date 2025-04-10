@@ -65,6 +65,7 @@ class EstiaSerial {
 	void operationSwitch(std::string operation, uint8_t onOff);
 	bool splitSnifferBuffer();
 	void decodeStatus(ReadBuffer buffer);
+	void decodeAck(ReadBuffer& buffer);
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
 	void read(ReadBuffer& buffer, bool byteDelay = true);
 	uint16_t crc_16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
@@ -86,12 +87,14 @@ class EstiaSerial {
 
 	EstiaSerial(uint8_t rxPin, uint8_t txPin);
 
+	uint16_t frameAck;
 	bool newStatusData;
 	EstiaData sensorsData;
 
 	void begin();
 	SnifferState sniffer();
 	FrameBuffer getSniffedFrame();
+	uint16_t getAck();
 	StatusData& getStatusData();
 	int16_t requestData(uint8_t requestCode);
 	int16_t requestData(std::string request);

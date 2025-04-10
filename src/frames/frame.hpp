@@ -56,6 +56,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_SWITCH_DATA_LEN 0x08
 #define FRAME_TEMPERATURE_DATA_LEN 0x0c
 #define FRAME_REQ_DATA_DATA_LEN 0x0f
+#define FRAME_ACK_DATA_LEN 0x09
 #define FRAME_RES_DATA_DATA_LEN 0x0d
 #define FRAME_STATUS_DATA_LEN 0x19
 #define FRAME_UPDATE_DATA_LEN 0x0f
@@ -67,6 +68,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_SWITCH_LEN 14
 #define FRAME_TEMPERATURE_LEN 18
 #define FRAME_REQ_DATA_LEN 21
+#define FRAME_ACK_LEN 15
 #define FRAME_RES_DATA_LEN 19
 #define FRAME_STATUS_LEN 31
 #define FRAME_UPDATE_LEN 21
@@ -104,4 +106,5 @@ class EstiaFrame {
 	static FrameBuffer readBuffToFrameBuff(const ReadBuffer& buffer);
 	static bool isStatusFrame(const ReadBuffer& buffer);
 	static bool isStatusUpdateFrame(const ReadBuffer& buffer);
+	static bool isAckFrame(const ReadBuffer& buffer);
 };

@@ -143,3 +143,28 @@ class ForcedDefrostFrame : public EstiaFrame {
   public:
 	ForcedDefrostFrame(uint8_t onOff);
 };
+
+#define ACK_FRAME_CODE_OFFSET 11
+#define ACK_BASE 0x00, 0x08, 0x00, 0x08, 0x00, 0x00, 0xa1, 0x00, 0x00
+
+// ack
+// a0 00 18 09 00 08 00 08 00 00 a1 00 41 c1 95 -> frame with data type 0x0041 ack'd
+
+class AckFrame : public EstiaFrame {
+  private:
+	uint8_t checkFrame();
+
+
+  public:
+	enum DataError {
+		err_ok,
+		err_data_len,
+		err_frame_type,
+		err_crc,
+	};
+
+	AckFrame(ReadBuffer& buffer);
+
+	uint16_t frameCode;
+	uint8_t error;
+};
