@@ -49,6 +49,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_DATA_TYPE_DATA_REQUEST 0x0080
 #define FRAME_DATA_TYPE_DATA_RESPONSE 0x00ef
 #define FRAME_DATA_TYPE_ACK 0x00a1
+#define FRAME_DATA_TYPE_SHORT_STATUS 0x002b
 
 #define FRAME_MIN_DATA_LEN 0x07
 #define FRAME_HEARTBEAT_DATA_LEN 0x07

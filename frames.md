@@ -50,14 +50,14 @@ fe - broadcast ?
 00 80 - data request
 00 ef - data response
 00 a1 - ack
-00 2b - ?
+00 2b - short status
 ```
-##  Heartbeat frame, `13` bytes
+## Status frames
+###  Heartbeat frame, `13` bytes
 ```
 a0 00 10 07 00 08 00 00 fe 00 8a 75 05
 ```
-
-## Status frame, `31` bytes
+### status frame, `31` bytes
 ```
 a0 00 58 19 00 08 00 00 fe 03 c6 c1 30 10 78 5c 7a 78 5c 7a 00 00 00 00 00 e9 89 5e 00 41 4a
 a0 00 58 19 00 08 00 00 fe 03 c6 c1 30 12 78 62 7a 78 5e 6c 00 10 00 00 00 e9 84 5d 00 d8 d0 - night mode on
@@ -78,7 +78,7 @@ a0 00 58 19 00 08 00 00 fe 03 c6 c0 00 00 76 5a 7a 76 5a 7a 00 00 00 00 00 e9 5d
                                  || ^^ 12 - 0x00 off, +0x04 auto mode on, +0x10 quiet on, +0x20 night on
                                  ^^ 11 - 0xc0 all off, +0x01 heating on, +0x02 hot water on, 0xc3 heating + hot water
 ```
-## status update frame, `21` bytes
+### status update frame, `21` bytes
 ```
 a0 00 1c 0f 00 08 00 00 fe 03 c6 c1 00 12 76 60 7a 00 00 15 4c
 a0 00 1c 0f 00 08 00 00 fe 03 c6 c0 20 00 76 5a 7a 10 00 b8 5b
@@ -90,18 +90,27 @@ a0 00 1c 0f 00 08 00 00 fe 03 c6 c0 20 00 76 5a 7a 10 00 b8 5b
                                  || ^^ 12 - 0x00 off, +0x04 auto mode on, +0x10 quiet on, +0x20 night on
                                  ^^ 11 - 0xc0 all off, +0x01 heating on, +0x02 hot water on, 0xc3 heating + hot water
 ```
-## ack frame, `15` bytes
+### status frame, `15` bytes
 ```
-a0 00 18 09 00 08 00 08 00 00 a1 00 41 c1 95
-                                 ^^ ^^ - frame with this data type ack'd
+a0 00 55 09 00 00 40 08 00 03 c6 00 00 ae 4c
 ```
-## data request frame, `21` bytes
+### short status frame, `17` bytes
 ```
-a0 00 17 0f 00 00 40 08 00 00 80 00 ef 00 2c 08 00 06 00 2c 40
+a0 00 58 0b 00 08 00 00 fe 00 2b 00 00 01 32 7c 58
+
+a0 00 18 09 00 08 00 00 40 00 a1 00 2b ed b3 # short status frame ack?
+```
+## Data request
+### data request frame, `21` bytes
+
+requested data code byte `17`  
+
+```
+a0 00 17 0f 00 00 40 08 00 00 80 00 ef 00 2c 08 00 06 00 2c 40 -> request data, code offset 17, value = 0x00 - 0xff
                                  || ||             ^^ - requested data code
                                  ^^ ^^ - frame with this data type expected ?
 ```
-## data response frame, `19` bytes
+### data response frame, `19` bytes
 ```
 a0 00 1a 0d 00 08 00 00 40 00 ef 00 80 00 2c 00 1f 73 83
 a0 00 1a 0d 00 08 00 00 40 00 ef 00 80 00 a2 00 2c 6c 6c
@@ -109,12 +118,12 @@ a0 00 1a 0d 00 08 00 00 40 00 ef 00 80 00 a2 00 2c 6c 6c
                                  || ||    ^^ - 0x2c -> data available, 0xa2 -> data not available
                                  ^^ ^^ - response to frame with this type ?
 ```
-# Commands
-## `14` bytes
+## Commands
+### `14` bytes
 
 command byte `11`  
 
-### heating on/off
+#### heating on/off
 ```
 a0 00 11 08 00 00 40 08 00 00 41 23 8f 38             -> on,  0x23
 a0 00 11 08 00 00 40 08 00 00 41 22 9e b1             -> off, 0x22
@@ -123,7 +132,7 @@ a0 00 11 08 00 00 40 08 00 00 41 22 9e b1             -> off, 0x22
 a0 00 11 08 00 08 00 08 00 00 41 03 72 07             -> on,  0x03 by digital input
 a0 00 11 08 00 08 00 08 00 00 41 02 63 8e             -> off, 0x02 by digital input
 ```
-### hot water on/off
+#### hot water on/off
 ```
 a0 00 11 08 00 00 40 08 00 00 41 2c 77 cf             -> on,  0x2c
 a0 00 11 08 00 00 40 08 00 00 41 28 31 eb             -> off, 0x28
@@ -132,16 +141,16 @@ a0 00 11 08 00 00 40 08 00 00 41 28 31 eb             -> off, 0x28
 a0 00 11 08 00 08 00 08 00 00 41 0c  crc              -> on,  0x0c by digital input
 a0 00 11 08 00 08 00 08 00 00 41 08 cc d4             -> off, 0x08 by digital input
 ```
-## `17` bytes
+### `17` bytes
 command byte `11`  
 value byte `12`  
 
-### auto mode off/on
+#### auto mode off/on
 ```
 a0 00 11 0b 00 00 40 08 00 03 c4 01 01 00 00 84 03    -> on,              command 0x01, value 0x01
 a0 00 11 0b 00 00 40 08 00 03 c4 01 00 00 00 de df    -> off,             command 0x01, value 0x00
 ```
-### quiet mode on/off (glitched)
+#### quiet mode on/off (glitched)
 
 Quiet mode must be enabled in controller all the time to be able to switch on and off with commands.
 
@@ -149,31 +158,31 @@ Quiet mode must be enabled in controller all the time to be able to switch on an
 a0 00 11 0b 00 00 40 08 00 03 c4 04 04 00 00 d3 e9    -> on,              command 0x04, value 0x04 (0x01 << 2)
 a0 00 11 0b 00 00 40 08 00 03 c4 04 00 00 00 b0 88    -> off,             command 0x04, value 0x00
 ```
-### quiet mode activate/deactivate
+#### quiet mode activate/deactivate
 ```
 a0 00 11 0b 00 00 40 08 00 03 c4 04 04 00 00 d3 e9    -> activate,        command 0x04, value 0x04 (0x01 << 2) ?
 a0 00 11 0b 00 00 40 08 00 03 c4 04 00 00 00 b0 88    -> deactivate,      command 0x04, value 0x00 ?
 ```
-### night mode on/off
+#### night mode on/off
 ```
 a0 00 11 0b 00 00 40 08 00 03 c4 88 08 00 00 cc 10    -> on,              command 0x88, value 0x08 (0x01 << 3)
 a0 00 11 0b 00 00 40 08 00 03 c4 88 88 00 00 c0 fc    -> on and activate, command 0x88, value 0x88 ?
 a0 00 11 0b 00 00 40 08 00 03 c4 88 00 00 00 0a d2    -> off,             command 0x88, value 0x00
 ```
-### night mode activate/deactivate
+#### night mode activate/deactivate
 ```
 a0 00 11 0b 00 00 40 08 00 03 c4 88 88 00 00 c0 fc    -> activate,        command 0x88, value 0x88 (0x11 << 3) current | 0x80
 a0 00 11 0b 00 00 40 08 00 03 c4 88 08 00 00  crc     -> deactivate,      command 0x88, value 0x08 (0x01 << 3) current & 0x08
 ```
-### combined `17` bytes frame
+#### combined `17` bytes frame
 
 command `8c = 04 | 88` value   `0c = 04 | 08`
 
 ```
 a0 00 11 0b 00 00 40 08 00 03 c4 8c 0c 00 00 dd 9d    -> combined quiet mode activate + night mode deactivate
 ```
-## `16` bytes
-### force defrost
+### `16` bytes
+#### force defrost
 
 command byte `12`  
 value byte `13`  
@@ -182,27 +191,25 @@ value byte `13`
 a0 00 11 0a 00 00 40 08 00 00 15 00 46 01 e7 25       -> on,              command 0x46, value 0x01
 a0 00 11 0a 00 00 40 08 00 00 15 00 46 00 f6 ac       -> off,             command 0x46, value 0x00
 ```
-## `18` bytes
+### `18` bytes
 
 command byte `11`
 
-### heating temperature change
+#### heating temperature change
 ```
 a0 00 11 0c 00 00 40 08 00 03 c1 02 5c 7a 76 5c b2 d1 -> command 0x02, value offset 12 and 15, value = (temp + 16) * 2
 ```
-### heating zone 2 temperature change ?
+#### heating zone 2 temperature change ?
 ```
 a0 00 11 0c 00 00 40 08 00 03 c1 04 5c 7a 76 5c  crc  -> command 0x04, value offset 13, value = (temp + 16) * 2 ?
 ```
-### hot water temperature change
+#### hot water temperature change
 ```
 a0 00 11 0c 00 00 40 08 00 03 c1 08 00 12 78 5c e5 c4
 a0 00 11 0c 00 00 40 08 00 03 c1 08 00 00 70 00 83 c0 -> command 0x08, value offset 14, value = (temp + 16) * 2
 ```
-## `21` bytes
-### request data
-
-requested data code byte `17`  
+### ack frame, `15` bytes
 ```
-a0 00 17 0f 00 00 40 08 00 00 80 00 ef 00 2c 08 00 07 00 35 98 -> request data, code offset 17, value = 0x00 - 0xff
+a0 00 18 09 00 08 00 08 00 00 a1 00 41 c1 95
+                                 ^^ ^^ - frame with this data type ack'd
 ```
