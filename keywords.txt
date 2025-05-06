@@ -64,6 +64,11 @@ setMode  KEYWORD2
 setTemperature  KEYWORD2
 forceDefrost  KEYWORD2
 
+setSrc  KEYWORD2
+setDst  KEYWORD2
+setDataType  KEYWORD2
+writeUint16  KEYWORD2
+readUint16  KEYWORD2
 crc16  KEYWORD2
 setByte  KEYWORD2
 getByte  KEYWORD2

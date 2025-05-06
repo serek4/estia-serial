@@ -25,12 +25,13 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #include <utility>
 #include <vector>
 
-#define FRAME_BEGIN 0xa0
 #define FRAME_TYPE_OFFSET 2
 #define FRAME_DATA_LEN_OFFSET 3
-#define FRAME_DATA_OFFSET 4
+#define FRAME_DATA_HEADER_OFFSET 4
+#define FRAME_SRC_OFFSET 5
+#define FRAME_DST_OFFSET 7
 #define FRAME_DATA_TYPE_OFFSET 9
-#define FRAME_HEAD_AND_CRC_LEN 6
+#define FRAME_DATA_OFFSET 11
 
 #define FRAME_TYPE_HEARTBEAT 0x10
 #define FRAME_TYPE_SET 0x11
@@ -39,6 +40,12 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_TYPE_RES_DATA 0x1a
 #define FRAME_TYPE_UPDATE 0x1c
 #define FRAME_TYPE_STATUS 0x58
+
+#define FRAME_BEGIN 0xa0
+
+#define FRAME_SRC_DST_MASTER 0x0800
+#define FRAME_SRC_DST_REMOTE 0x0040
+#define FRAME_SRC_DST_BROADCAST 0x00fe
 
 #define FRAME_DATA_TYPE_HEARTBEAT 0x008a
 #define FRAME_DATA_TYPE_STATUS 0x03c6
@@ -52,6 +59,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_DATA_TYPE_SHORT_STATUS 0x002b
 
 #define FRAME_MIN_DATA_LEN 0x07
+#define FRAME_DATA_HEADER_LEN 0x07
 #define FRAME_HEARTBEAT_DATA_LEN 0x07
 #define FRAME_SET_MODE_DATA_LEN 0x0b
 #define FRAME_SWITCH_DATA_LEN 0x08
@@ -63,6 +71,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_UPDATE_DATA_LEN 0x0f
 #define FRAME_FORCE_DEFROST_DATA_LEN 0x0a
 
+#define FRAME_HEAD_AND_CRC_LEN 0x06
 #define FRAME_MIN_LEN FRAME_HEAD_AND_CRC_LEN + FRAME_MIN_DATA_LEN
 #define FRAME_HEARTBEAT_LEN 13
 #define FRAME_SET_MODE_LEN 17
@@ -83,9 +92,16 @@ class EstiaFrame {
   protected:
 	uint8_t type;
 	uint8_t dataLength;
+	uint16_t src;
+	uint16_t dst;
+	uint16_t dataType;
 	uint16_t crc;
 
-	void updateDataType();
+	void setSrc(uint16_t src, bool updateCrc = false);
+	void setDst(uint16_t dst, bool updateCrc = false);
+	void setDataType(uint16_t dataType, bool updateCrc = false);
+	void writeUint16(uint8_t offset, uint16_t data);
+	uint16_t readUint16(uint8_t offset);
 	uint16_t crc16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
 
   public:
@@ -95,17 +111,18 @@ class EstiaFrame {
 
 	uint8_t length;
 	FrameBuffer buffer;
-	uint16_t dataType;
 
 	bool setByte(uint8_t position, uint8_t value, bool updateCrc = true);
 	uint8_t getByte(uint8_t position);
 	uint8_t* getBuffer();
 	void updateCrc();
-	bool insertData(uint8_t* data, bool updateCrc = true);
+	bool insertData(uint8_t* data, bool incHeader = true, bool updateCrc = true);
 	static String stringify(EstiaFrame* frame);
 	static String stringify(const FrameBuffer& buffer);
 	static FrameBuffer readBuffToFrameBuff(const ReadBuffer& buffer);
 	static bool isStatusFrame(const ReadBuffer& buffer);
 	static bool isStatusUpdateFrame(const ReadBuffer& buffer);
 	static bool isAckFrame(const ReadBuffer& buffer);
+
+	friend class EstiaSerial;
 };

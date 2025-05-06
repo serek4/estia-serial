@@ -23,7 +23,6 @@ StatusFrame::StatusFrame(FrameBuffer&& buffer, uint8_t length)
     , longFrame(length == FRAME_STATUS_LEN)
     , error(0) {
 	error = checkFrame();
-	if (error == err_ok) { updateDataType(); }
 }
 
 StatusFrame::StatusFrame(ReadBuffer& buffer, uint8_t length)

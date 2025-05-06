@@ -30,14 +30,17 @@ a0 00 xx xx xx xx xx xx xx xx xx xx xx xx xx xx
 ```
 <---data header----> <-data->
 00 01 02 03 04 05 06 07
-            || ^^ ^^ - data type
-            ^^ - destination ?
+   || || || || ^^ ^^ - data type
+   || || ^^ ^^ - destination
+   ^^ ^^ - source
 ```
-#### destinations
+#### sources/destinations
 ```
-fe - broadcast ?
-00 - master ?
-40 - remote ?
+00 fe - broadcast, dst only
+08 00 - master
+00 40 - remote
+00 f0 - at boot only, dst only ?
+00 a0 - at boot only, dst only ?
 ```
 #### data types
 ```

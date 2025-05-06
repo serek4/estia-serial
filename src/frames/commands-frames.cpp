@@ -22,9 +22,9 @@ SetModeFrame::SetModeFrame(uint8_t mode, uint8_t onOff)
     : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_SET_MODE_LEN)
     , mode(mode)
     , onOff(modeOnOff(onOff)) {
-	uint8_t emptyRequest[] = {SET_MODE_BASE};
-	insertData(emptyRequest, false);
-	updateDataType();
+	setSrc(SET_MODE_SRC);
+	setDst(SET_MODE_DST);
+	setDataType(FRAME_DATA_TYPE_MODE_CHANGE);
 	setByte(SET_MODE_CODE_OFFSET, mode, false);
 	setByte(SET_MODE_VALUE_OFFSET, this->onOff);
 }
@@ -52,9 +52,9 @@ SwitchFrame::SwitchFrame(uint8_t operation, uint8_t onOff)
     : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_SWITCH_LEN)
     , operation(operation)
     , onOff(operationOnOff(onOff)) {
-	uint8_t emptyRequest[] = {SWITCH_BASE};
-	insertData(emptyRequest, false);
-	updateDataType();
+	setSrc(SWITCH_SRC);
+	setDst(SWITCH_DST);
+	setDataType(FRAME_DATA_TYPE_OPERATION_SWITCH);
 	setByte(SWITCH_VALUE_OFFSET, this->onOff);
 }
 
@@ -80,9 +80,9 @@ TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uin
     , heatingTemperature(constrainTemp(heatingTemperature))
     , zone2Temperature(constrainTemp(zone2Temperature))
     , hotWaterTemperature(constrainTemp(hotWaterTemperature)) {
-	uint8_t emptyRequest[] = {TEMPERATURE_BASE};
-	insertData(emptyRequest, false);
-	updateDataType();
+	setSrc(TEMPERATURE_SRC);
+	setDst(TEMPERATURE_DST);
+	setDataType(FRAME_DATA_TYPE_TEMPERATURE_CHANGE);
 	setByte(TEMPERATURE_CODE_OFFSET, zone, false);
 	switch (zone) {
 		case TEMPERATURE_HEATING_CODE:
@@ -120,9 +120,9 @@ uint8_t TemperatureFrame::convertTemp(uint8_t temperature) {
 ForcedDefrostFrame::ForcedDefrostFrame(uint8_t onOff)
     : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_FORCE_DEFROST_LEN)
     , onOff(onOff) {
-	uint8_t emptyRequest[] = {FORCE_DEFROST_BASE};
-	insertData(emptyRequest, false);
-	updateDataType();
+	setSrc(FORCE_DEFROST_SRC);
+	setDst(FORCE_DEFROST_DST);
+	setDataType(FRAME_DATA_TYPE_FORCE_DEFROST);
 	setByte(FORCE_DEFROST_CODE_OFFSET, FORCE_DEFROST_CODE, false);
 	setByte(FORCE_DEFROST_VALUE_OFFSET, this->onOff);
 }
@@ -131,8 +131,7 @@ AckFrame::AckFrame(ReadBuffer& buffer)
     : EstiaFrame::EstiaFrame(readBuffToFrameBuff(buffer), FRAME_ACK_LEN) {
 	error = checkFrame();
 	if (error == err_ok) {
-		updateDataType();
-		frameCode = (this->buffer.at(ACK_FRAME_CODE_OFFSET) << 8) | this->buffer.at(ACK_FRAME_CODE_OFFSET + 1);
+		frameCode = readUint16(ACK_FRAME_CODE_OFFSET);
 	}
 }
 

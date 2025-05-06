@@ -26,9 +26,12 @@ RequestData::RequestData(uint8_t code, float multiplier)
 DataReqFrame::DataReqFrame(uint8_t requestCode)
     : EstiaFrame::EstiaFrame(FRAME_TYPE_REQ_DATA, FRAME_REQ_DATA_LEN)
     , requestCode(requestCode) {
-	uint8_t blankRequest[dataLength] = {REQ_DATA_BASE};
-	insertData(blankRequest, false);
-	updateDataType();
+	uint8_t blankRequest[dataLength - FRAME_DATA_HEADER_LEN] = {REQ_DATA_BASE};
+
+	setSrc(REQ_DATA_SRC);
+	setDst(REQ_DATA_DST);
+	setDataType(FRAME_DATA_TYPE_DATA_REQUEST);
+	insertData(blankRequest, false, false);
 	setByte(REQ_DATA_CODE_OFFSET, requestCode);
 }
 
@@ -38,8 +41,7 @@ DataResFrame::DataResFrame(FrameBuffer&& buffer)
     , value(0) {
 	error = checkFrame();
 	if (error == err_ok) {
-		updateDataType();
-		value = (this->buffer.at(RES_DATA_VALUE_OFFSET) << 8) | this->buffer.at(RES_DATA_VALUE_OFFSET + 1);
+		value = readUint16(RES_DATA_VALUE_OFFSET);
 	}
 }
 

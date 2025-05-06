@@ -43,6 +43,9 @@ struct StatusData {
 	bool nightModeActive;
 };
 
+#define STATUS_SRC FRAME_SRC_DST_MASTER
+#define STATUS_DST FRAME_SRC_DST_BROADCAST
+
 class StatusFrame : public EstiaFrame {
   private:
 	bool longFrame;

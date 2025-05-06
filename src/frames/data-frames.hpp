@@ -23,9 +23,6 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #include <unordered_map>
 #include <utility>
 
-#define REQ_DATA_CODE_OFFSET 17
-#define REQ_DATA_BASE 0x00, 0x00, 0x40, 0x08, 0x00, 0x00, 0x80, 0x00, 0xef, 0x00, 0x2c, 0x08, 0x00, 0x00, 0x00
-
 struct RequestData {
 	RequestData(uint8_t code, float multiplier);
 	uint8_t code;
@@ -38,6 +35,11 @@ struct RequestData {
 * @param multiplier data modifier
 */
 using RequestsMap = std::unordered_map<std::string, RequestData>;
+
+#define REQ_DATA_SRC FRAME_SRC_DST_REMOTE
+#define REQ_DATA_DST FRAME_SRC_DST_MASTER
+#define REQ_DATA_BASE 0x00, 0xef, 0x00, 0x2c, 0x08, 0x00, 0x00, 0x00
+#define REQ_DATA_CODE_OFFSET 17
 
 class DataReqFrame : public EstiaFrame {
   private:
@@ -130,11 +132,12 @@ const RequestsMap requestsMap = {
     {"backup_heater_on_time", {CODE_BACKUP_HEATER_ON_TIME, 100}},
     {"boost_heater_on_time", {CODE_BOOST_HEATER_ON_TIME, 100}}};
 
+#define RES_DATA_SRC FRAME_SRC_DST_MASTER
+#define RES_DATA_DST FRAME_SRC_DST_REMOTE
 #define RES_DATA_VALUE_OFFSET 15
 #define RES_DATA_EMPTY_OFFSET 14
 #define RES_DATA_EMPTY_FLAG 0xa2
 #define RES_DATA_NOT_EMPTY_FLAG 0x2c
-#define RES_DATA_BASE 0x00, 0x08, 0x00, 0x00, 0x40, 0x00, 0xef, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
 
 class DataResFrame : public EstiaFrame {
   private:

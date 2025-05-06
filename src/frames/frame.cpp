@@ -24,6 +24,8 @@ EstiaFrame::EstiaFrame(FrameBuffer&& buffer, uint8_t length)
     , buffer(buffer)
     , type(0x00)
     , dataLength(0x00)
+    , src(0x0000)
+    , dst(0x0000)
     , dataType(0x0000)
     , crc(0x0000) {
 	if (length < FRAME_MIN_LEN) {    // ensure minimum buffer size
@@ -32,8 +34,10 @@ EstiaFrame::EstiaFrame(FrameBuffer&& buffer, uint8_t length)
 	this->buffer.resize(this->length, 0x00);    // resize to proper length
 	type = this->buffer.at(FRAME_TYPE_OFFSET);
 	dataLength = this->buffer.at(FRAME_DATA_LEN_OFFSET);
-	dataType = (this->buffer.at(FRAME_DATA_TYPE_OFFSET) << 8) | this->buffer.at(FRAME_DATA_TYPE_OFFSET + 1);
-	crc = (this->buffer.at(this->length - 2) << 8) | this->buffer.at(this->length - 1);
+	src = readUint16(FRAME_SRC_OFFSET);
+	dst = readUint16(FRAME_DST_OFFSET);
+	dataType = readUint16(FRAME_DATA_TYPE_OFFSET);
+	crc = readUint16(this->length - 2);
 }
 
 // frame from buffer (lvalue)
@@ -47,6 +51,8 @@ EstiaFrame::EstiaFrame(uint8_t type, uint8_t length)
     , buffer(length, 0x00)
     , type(type)
     , dataLength(length - FRAME_HEAD_AND_CRC_LEN)
+    , src(0x0000)
+    , dst(0x0000)
     , dataType(0x0000)
     , crc(0x0000) {
 	if (length < FRAME_MIN_LEN) {    // ensure minimum buffer size
@@ -75,12 +81,12 @@ uint8_t* EstiaFrame::getBuffer() {
 
 void EstiaFrame::updateCrc() {
 	crc = crc16(buffer.data(), length - 2);
-	buffer.at(length - 2) = (crc & 0xff00) >> 8;
-	buffer.at(length - 1) = crc & 0x00ff;
+	writeUint16(length - 2, crc);
 }
 
-bool EstiaFrame::insertData(uint8_t* data, bool updateCrc) {
-	for (uint8_t idx = 0; idx < dataLength; idx++) {
+bool EstiaFrame::insertData(uint8_t* data, bool incHeader, bool updateCrc) {
+	uint8_t len = incHeader ? dataLength : dataLength - FRAME_DATA_HEADER_LEN;
+	for (uint8_t idx = 0; idx < len; idx++) {
 		this->buffer.at(idx + FRAME_DATA_OFFSET) = data[idx];
 	}
 	if (updateCrc) { this->updateCrc(); }
@@ -101,8 +107,36 @@ String EstiaFrame::stringify(const FrameBuffer& buffer) {
 	return stringifyBuffer;
 }
 
-void EstiaFrame::updateDataType() {
-	dataType = (this->buffer.at(FRAME_DATA_TYPE_OFFSET) << 8) | this->buffer.at(FRAME_DATA_TYPE_OFFSET + 1);
+void EstiaFrame::setSrc(uint16_t src, bool updateCrc) {
+	this->src = src;
+	writeUint16(FRAME_SRC_OFFSET, src);
+	if (updateCrc) { this->updateCrc(); }
+}
+
+void EstiaFrame::setDst(uint16_t dst, bool updateCrc) {
+	this->dst = dst;
+	writeUint16(FRAME_DST_OFFSET, dst);
+	if (updateCrc) { this->updateCrc(); }
+}
+
+void EstiaFrame::setDataType(uint16_t dataType, bool updateCrc) {
+	this->dataType = dataType;
+	writeUint16(FRAME_DATA_TYPE_OFFSET, dataType);
+	if (updateCrc) { this->updateCrc(); }
+}
+
+void EstiaFrame::writeUint16(uint8_t offset, uint16_t data) {
+	if (offset >= length - 1) { return; }
+
+	buffer.at(offset) = (data & 0xff00) >> 8;
+	buffer.at(offset + 1) = data & 0x00ff;
+}
+
+uint16_t EstiaFrame::readUint16(uint8_t offset) {
+	if (offset >= length) { return 0x0000; }
+	if (offset == length - 1) { return buffer.at(length - 1); }
+
+	return (buffer.at(offset) << 8) | buffer.at(offset + 1);
 }
 
 // https://gist.github.com/aurelj/270bb8af82f65fa645c1?permalink_comment_id=2884584#gistcomment-2884584

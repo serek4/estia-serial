@@ -24,9 +24,10 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #include <string>
 #include <unordered_map>
 
+#define SET_MODE_SRC FRAME_SRC_DST_REMOTE
+#define SET_MODE_DST FRAME_SRC_DST_MASTER
 #define SET_MODE_CODE_OFFSET 11
 #define SET_MODE_VALUE_OFFSET 12
-#define SET_MODE_BASE 0x00, 0x00, 0x40, 0x08, 0x00, 0x03, 0xc4, 0x00, 0x00, 0x00, 0x00
 
 #define SET_AUTO_MODE_CODE 0x01
 #define SET_QUIET_MODE_CODE 0x04
@@ -61,8 +62,9 @@ class SetModeFrame : public EstiaFrame {
 	SetModeFrame(std::string mode, uint8_t onOff);
 };
 
+#define SWITCH_SRC FRAME_SRC_DST_REMOTE
+#define SWITCH_DST FRAME_SRC_DST_MASTER
 #define SWITCH_VALUE_OFFSET 11
-#define SWITCH_BASE 0x00, 0x00, 0x40, 0x08, 0x00, 0x00, 0x41, 0x00
 #define SWITCH_OPERATION_HEATING 0x22
 #define SWITCH_OPERATION_HOT_WATER 0x28
 
@@ -91,7 +93,8 @@ class SwitchFrame : public EstiaFrame {
 	SwitchFrame(std::string operation, uint8_t onOff);
 };
 
-#define TEMPERATURE_BASE 0x00, 0x00, 0x40, 0x08, 0x00, 0x03, 0xc1, 0x00, 0x00, 0x00, 0x00, 0x00
+#define TEMPERATURE_SRC FRAME_SRC_DST_REMOTE
+#define TEMPERATURE_DST FRAME_SRC_DST_MASTER
 #define TEMPERATURE_CODE_OFFSET 11
 #define TEMPERATURE_HEATING_CODE 0x02
 #define TEMPERATURE_HOT_WATER_CODE 0x08
@@ -125,9 +128,10 @@ class TemperatureFrame : public EstiaFrame {
 	TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature);
 };
 
+#define FORCE_DEFROST_SRC FRAME_SRC_DST_REMOTE
+#define FORCE_DEFROST_DST FRAME_SRC_DST_MASTER
 #define FORCE_DEFROST_CODE_OFFSET 12
 #define FORCE_DEFROST_VALUE_OFFSET 13
-#define FORCE_DEFROST_BASE 0x00, 0x00, 0x40, 0x08, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00
 
 #define FORCE_DEFROST_CODE 0x46
 
@@ -144,8 +148,9 @@ class ForcedDefrostFrame : public EstiaFrame {
 	ForcedDefrostFrame(uint8_t onOff);
 };
 
+#define ACK_SRC FRAME_SRC_DST_MASTER
+#define ACK_DST FRAME_SRC_DST_MASTER
 #define ACK_FRAME_CODE_OFFSET 11
-#define ACK_BASE 0x00, 0x08, 0x00, 0x08, 0x00, 0x00, 0xa1, 0x00, 0x00
 
 // ack
 // a0 00 18 09 00 08 00 08 00 00 a1 00 41 c1 95 -> frame with data type 0x0041 ack'd
