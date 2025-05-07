@@ -79,7 +79,6 @@ class EstiaSerial {
 	bool sendCommand();
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
 	void read(ReadBuffer& buffer, bool byteDelay = true);
-	uint16_t crc_16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
 
   public:
 	enum ResponseError {

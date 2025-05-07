@@ -102,7 +102,6 @@ class EstiaFrame {
 	void setDataType(uint16_t dataType, bool updateCrc = false);
 	void writeUint16(uint8_t offset, uint16_t data);
 	uint16_t readUint16(uint8_t offset);
-	uint16_t crc16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
 	uint8_t checkFrame(uint8_t type, uint16_t dataType);
 
   public:
@@ -126,6 +125,7 @@ class EstiaFrame {
 	uint8_t* getBuffer();
 	void updateCrc();
 	bool insertData(uint8_t* data, bool incHeader = true, bool updateCrc = false);
+	static uint16_t crc16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
 	static String stringify(EstiaFrame* frame);
 	static String stringify(const FrameBuffer& buffer);
 	static FrameBuffer readBuffToFrameBuff(const ReadBuffer& buffer);

@@ -320,20 +320,3 @@ void EstiaSerial::read(ReadBuffer& buffer, bool byteDelay) {
 	}
 	digitalWrite(LED_BUILTIN, HIGH);
 }
-
-// https://gist.github.com/aurelj/270bb8af82f65fa645c1?permalink_comment_id=2884584#gistcomment-2884584
-uint16_t EstiaSerial::crc_16(uint8_t* data, size_t len) {
-	uint16_t crc = 0xffff;
-	uint8_t L;
-	uint8_t t;
-	if (!data || len <= 0) { return crc; }
-	while (len--) {
-		crc ^= *data++;
-		L = crc ^ (crc << 4);
-		t = (L << 3) | (L >> 5);
-		L ^= (t & 0x07);
-		t = (t & 0xf8) ^ (((t << 1) | (t >> 7)) & 0x0f) ^ (uint8_t)(crc >> 8);
-		crc = (L << 8) | t;
-	}
-	return crc;
-}
