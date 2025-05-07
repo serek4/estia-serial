@@ -122,11 +122,10 @@ class EstiaFrame {
 	uint8_t length;
 	FrameBuffer buffer;
 
-	bool setByte(uint8_t position, uint8_t value, bool updateCrc = true);
-	uint8_t getByte(uint8_t position);
+	bool setByte(uint8_t offset, uint8_t value, bool updateCrc = false);
 	uint8_t* getBuffer();
 	void updateCrc();
-	bool insertData(uint8_t* data, bool incHeader = true, bool updateCrc = true);
+	bool insertData(uint8_t* data, bool incHeader = true, bool updateCrc = false);
 	static String stringify(EstiaFrame* frame);
 	static String stringify(const FrameBuffer& buffer);
 	static FrameBuffer readBuffToFrameBuff(const ReadBuffer& buffer);

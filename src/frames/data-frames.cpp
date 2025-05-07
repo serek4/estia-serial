@@ -31,8 +31,8 @@ DataReqFrame::DataReqFrame(uint8_t requestCode)
 	setSrc(REQ_DATA_SRC);
 	setDst(REQ_DATA_DST);
 	setDataType(FRAME_DATA_TYPE_DATA_REQUEST);
-	insertData(blankRequest, false, false);
-	setByte(REQ_DATA_CODE_OFFSET, requestCode);
+	insertData(blankRequest, false);
+	setByte(REQ_DATA_CODE_OFFSET, requestCode, true);
 }
 
 DataResFrame::DataResFrame(FrameBuffer&& buffer)

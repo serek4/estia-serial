@@ -72,7 +72,6 @@ readUint16  KEYWORD2
 checkFrame  KEYWORD2
 crc16  KEYWORD2
 setByte  KEYWORD2
-getByte  KEYWORD2
 getBuffer  KEYWORD2
 updateCrc  KEYWORD2
 insertData  KEYWORD2

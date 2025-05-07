@@ -64,15 +64,12 @@ EstiaFrame::EstiaFrame(uint8_t type, uint8_t length)
 	buffer.at(FRAME_DATA_LEN_OFFSET) = dataLength;
 }
 
-bool EstiaFrame::setByte(uint8_t position, uint8_t value, bool updateCrc) {
-	if (position > length) { return false; }
-	buffer.at(position) = value;
+bool EstiaFrame::setByte(uint8_t offset, uint8_t value, bool updateCrc) {
+	if (offset >= length) { return false; }
+
+	buffer.at(offset) = value;
 	if (updateCrc) { this->updateCrc(); }
 	return true;
-}
-
-uint8_t EstiaFrame::getByte(uint8_t position) {
-	return buffer.at(position);
 }
 
 uint8_t* EstiaFrame::getBuffer() {

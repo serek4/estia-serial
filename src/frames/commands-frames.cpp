@@ -25,8 +25,8 @@ SetModeFrame::SetModeFrame(uint8_t mode, uint8_t onOff)
 	setSrc(SET_MODE_SRC);
 	setDst(SET_MODE_DST);
 	setDataType(FRAME_DATA_TYPE_MODE_CHANGE);
-	setByte(SET_MODE_CODE_OFFSET, mode, false);
-	setByte(SET_MODE_VALUE_OFFSET, this->onOff);
+	setByte(SET_MODE_CODE_OFFSET, mode);
+	setByte(SET_MODE_VALUE_OFFSET, this->onOff, true);
 }
 
 SetModeFrame::SetModeFrame(std::string mode, uint8_t onOff)
@@ -55,7 +55,7 @@ SwitchFrame::SwitchFrame(uint8_t operation, uint8_t onOff)
 	setSrc(SWITCH_SRC);
 	setDst(SWITCH_DST);
 	setDataType(FRAME_DATA_TYPE_OPERATION_SWITCH);
-	setByte(SWITCH_VALUE_OFFSET, this->onOff);
+	setByte(SWITCH_VALUE_OFFSET, this->onOff, true);
 }
 
 SwitchFrame::SwitchFrame(std::string operation, uint8_t onOff)
@@ -83,19 +83,19 @@ TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uin
 	setSrc(TEMPERATURE_SRC);
 	setDst(TEMPERATURE_DST);
 	setDataType(FRAME_DATA_TYPE_TEMPERATURE_CHANGE);
-	setByte(TEMPERATURE_CODE_OFFSET, zone, false);
+	setByte(TEMPERATURE_CODE_OFFSET, zone);
 	switch (zone) {
 		case TEMPERATURE_HEATING_CODE:
-			setByte(TEMPERATURE_HEATING_VALUE_OFFSET, convertTemp(heatingTemperature), false);
+			setByte(TEMPERATURE_HEATING_VALUE_OFFSET, convertTemp(heatingTemperature));
 			// can this two be 0x00?
-			setByte(TEMPERATURE_ZONE2_VALUE_OFFSET, convertTemp(zone2Temperature), false);
-			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature), false);
+			setByte(TEMPERATURE_ZONE2_VALUE_OFFSET, convertTemp(zone2Temperature));
+			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature));
 			// do i need to set this too?
-			setByte(TEMPERATURE_HEATING_VALUE2_OFFSET, convertTemp(heatingTemperature));
+			setByte(TEMPERATURE_HEATING_VALUE2_OFFSET, convertTemp(heatingTemperature), true);
 			break;
 
 		case TEMPERATURE_HOT_WATER_CODE:
-			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature));
+			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature), true);
 			break;
 	}
 }
@@ -123,8 +123,8 @@ ForcedDefrostFrame::ForcedDefrostFrame(uint8_t onOff)
 	setSrc(FORCE_DEFROST_SRC);
 	setDst(FORCE_DEFROST_DST);
 	setDataType(FRAME_DATA_TYPE_FORCE_DEFROST);
-	setByte(FORCE_DEFROST_CODE_OFFSET, FORCE_DEFROST_CODE, false);
-	setByte(FORCE_DEFROST_VALUE_OFFSET, this->onOff);
+	setByte(FORCE_DEFROST_CODE_OFFSET, FORCE_DEFROST_CODE);
+	setByte(FORCE_DEFROST_VALUE_OFFSET, this->onOff, true);
 }
 
 AckFrame::AckFrame(ReadBuffer& buffer)
