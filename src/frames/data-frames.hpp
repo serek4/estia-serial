@@ -144,12 +144,8 @@ class DataResFrame : public EstiaFrame {
 	uint8_t checkFrame();
 
   public:
-	enum DataError {
-		err_ok,
-		err_data_empty,
-		err_data_len,
-		err_frame_type,
-		err_crc,
+	enum Error {
+		err_data_empty = err_other,
 	};
 
 	DataResFrame(FrameBuffer&& buffer);

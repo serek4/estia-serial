@@ -69,6 +69,7 @@ setDst  KEYWORD2
 setDataType  KEYWORD2
 writeUint16  KEYWORD2
 readUint16  KEYWORD2
+checkFrame  KEYWORD2
 crc16  KEYWORD2
 setByte  KEYWORD2
 getByte  KEYWORD2
@@ -80,7 +81,6 @@ readBuffToFrameBuff  KEYWORD2
 isStatusFrame  KEYWORD2
 isStatusUpdateFrame  KEYWORD2
 
-checkFrame  KEYWORD2
 decode  KEYWORD2
 
 modeOnOff  KEYWORD2

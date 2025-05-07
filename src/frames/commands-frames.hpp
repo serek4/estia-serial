@@ -157,17 +157,7 @@ class ForcedDefrostFrame : public EstiaFrame {
 
 class AckFrame : public EstiaFrame {
   private:
-	uint8_t checkFrame();
-
-
   public:
-	enum DataError {
-		err_ok,
-		err_data_len,
-		err_frame_type,
-		err_crc,
-	};
-
 	AckFrame(ReadBuffer& buffer);
 
 	uint16_t frameCode;

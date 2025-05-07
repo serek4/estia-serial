@@ -103,8 +103,18 @@ class EstiaFrame {
 	void writeUint16(uint8_t offset, uint16_t data);
 	uint16_t readUint16(uint8_t offset);
 	uint16_t crc16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
+	uint8_t checkFrame(uint8_t type, uint16_t dataType);
 
   public:
+	enum Error {
+		err_ok,
+		err_crc,
+		err_frame_type,
+		err_data_len,
+		err_data_type,
+		err_other,
+	};
+
 	EstiaFrame(FrameBuffer&& buffer, uint8_t length);
 	EstiaFrame(FrameBuffer& buffer, uint8_t length);
 	EstiaFrame(uint8_t type, uint8_t length);

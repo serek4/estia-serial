@@ -83,10 +83,11 @@ class EstiaSerial {
 
   public:
 	enum ResponseError {
-		err_crc = -205,
-		err_frame_type,
+		err_data_empty = -206,
+		err_data_type,
 		err_data_len,
-		err_data_empty,
+		err_frame_type,
+		err_crc,
 		err_timeout,
 		err_not_exist,
 	};

@@ -22,7 +22,7 @@ StatusFrame::StatusFrame(FrameBuffer&& buffer, uint8_t length)
     : EstiaFrame::EstiaFrame(buffer, length)
     , longFrame(length == FRAME_STATUS_LEN)
     , error(0) {
-	error = checkFrame();
+	error = checkFrame(longFrame ? FRAME_TYPE_STATUS : FRAME_TYPE_UPDATE, FRAME_DATA_TYPE_STATUS);
 }
 
 StatusFrame::StatusFrame(ReadBuffer& buffer, uint8_t length)
@@ -59,11 +59,4 @@ StatusData StatusFrame::decode() {
 		}
 	}
 	return data;
-}
-
-uint8_t StatusFrame::checkFrame() {
-	if (crc != crc16(buffer.data(), length - 2)) { return err_crc; }
-	if (type != (longFrame ? FRAME_TYPE_STATUS : FRAME_TYPE_UPDATE)) { return err_frame_type; }
-	if (dataLength != length - FRAME_HEAD_AND_CRC_LEN) { return err_data_len; }
-	return err_ok;
 }

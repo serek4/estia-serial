@@ -129,15 +129,8 @@ ForcedDefrostFrame::ForcedDefrostFrame(uint8_t onOff)
 
 AckFrame::AckFrame(ReadBuffer& buffer)
     : EstiaFrame::EstiaFrame(readBuffToFrameBuff(buffer), FRAME_ACK_LEN) {
-	error = checkFrame();
+	error = checkFrame(FRAME_TYPE_ACK, FRAME_DATA_TYPE_ACK);
 	if (error == err_ok) {
 		frameCode = readUint16(ACK_FRAME_CODE_OFFSET);
 	}
-}
-
-uint8_t AckFrame::checkFrame() {
-	if (crc != crc16(buffer.data(), length - 2)) { return err_crc; }
-	if (type != FRAME_TYPE_ACK) { return err_frame_type; }
-	if (dataLength != length - FRAME_HEAD_AND_CRC_LEN) { return err_data_len; }
-	return err_ok;
 }

@@ -50,15 +50,7 @@ class StatusFrame : public EstiaFrame {
   private:
 	bool longFrame;
 
-	uint8_t checkFrame();
-
   public:
-	enum StatusError {
-		err_ok,
-		err_data_len,
-		err_frame_type,
-		err_crc,
-	};
 	StatusFrame(FrameBuffer&& buffer, uint8_t length);
 	StatusFrame(ReadBuffer& buffer, uint8_t length);
 

@@ -54,9 +54,10 @@ DataResFrame::DataResFrame(ReadBuffer& buffer)
 }
 
 uint8_t DataResFrame::checkFrame() {
-	if (crc != crc16(buffer.data(), length - 2)) { return err_crc; }
-	if (type != FRAME_TYPE_RES_DATA) { return err_frame_type; }
-	if (dataLength != length - FRAME_HEAD_AND_CRC_LEN) { return err_data_len; }
+	uint8_t error = EstiaFrame::checkFrame(FRAME_TYPE_RES_DATA, FRAME_DATA_TYPE_DATA_RESPONSE);
+	if (error != err_ok) { return error; }
+
 	if (buffer.at(RES_DATA_EMPTY_OFFSET) == RES_DATA_EMPTY_FLAG) { return err_data_empty; }
+
 	return err_ok;
 }

@@ -139,6 +139,14 @@ uint16_t EstiaFrame::readUint16(uint8_t offset) {
 	return (buffer.at(offset) << 8) | buffer.at(offset + 1);
 }
 
+uint8_t EstiaFrame::checkFrame(uint8_t type, uint16_t dataType) {
+	if (crc != crc16(buffer.data(), length - 2)) { return err_crc; }
+	if (this->type != type) { return err_frame_type; }
+	if (dataLength != length - FRAME_HEAD_AND_CRC_LEN) { return err_data_len; }
+	if (this->dataType != dataType) { return err_data_type; }
+	return err_ok;
+}
+
 // https://gist.github.com/aurelj/270bb8af82f65fa645c1?permalink_comment_id=2884584#gistcomment-2884584
 uint16_t EstiaFrame::crc16(uint8_t* data, size_t len) {
 	uint16_t crc = 0xffff;
