@@ -122,18 +122,12 @@ void EstiaFrame::setDataType(uint16_t dataType, bool updateCrc) {
 	if (updateCrc) { this->updateCrc(); }
 }
 
-void EstiaFrame::writeUint16(uint8_t offset, uint16_t data) {
-	if (offset >= length - 1) { return; }
-
-	buffer.at(offset) = (data & 0xff00) >> 8;
-	buffer.at(offset + 1) = data & 0x00ff;
+bool EstiaFrame::writeUint16(uint8_t offset, uint16_t data) {
+	return writeUint16(this->buffer, offset, data);
 }
 
 uint16_t EstiaFrame::readUint16(uint8_t offset) {
-	if (offset >= length) { return 0x0000; }
-	if (offset == length - 1) { return buffer.at(length - 1); }
-
-	return (buffer.at(offset) << 8) | buffer.at(offset + 1);
+	return readUint16(this->buffer, offset);
 }
 
 uint8_t EstiaFrame::checkFrame(uint8_t type, uint16_t dataType) {
@@ -142,6 +136,23 @@ uint8_t EstiaFrame::checkFrame(uint8_t type, uint16_t dataType) {
 	if (dataLength != length - FRAME_HEAD_AND_CRC_LEN) { return err_data_len; }
 	if (this->dataType != dataType) { return err_data_type; }
 	return err_ok;
+}
+
+template <typename Buffer>
+bool EstiaFrame::writeUint16(Buffer& buffer, uint8_t offset, uint16_t data) {
+	if (offset >= buffer.size() - 1) { return false; }
+
+	buffer.at(offset) = static_cast<uint8_t>((data & 0xff00) >> 8);
+	buffer.at(offset + 1) = static_cast<uint8_t>(data & 0x00ff);
+	return true;
+}
+
+template <typename Buffer>
+uint16_t EstiaFrame::readUint16(const Buffer& buffer, uint8_t offset) {
+	if (offset >= buffer.size()) { return 0x0000; }
+	if (offset == buffer.size() - 1) { return buffer.at(buffer.size() - 1); }
+
+	return (buffer.at(offset) << 8) | buffer.at(offset + 1);
 }
 
 // https://gist.github.com/aurelj/270bb8af82f65fa645c1?permalink_comment_id=2884584#gistcomment-2884584
