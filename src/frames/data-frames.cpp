@@ -57,7 +57,7 @@ uint8_t DataResFrame::checkFrame() {
 	uint8_t error = EstiaFrame::checkFrame(FRAME_TYPE_RES_DATA, FRAME_DATA_TYPE_DATA_RESPONSE);
 	if (error != err_ok) { return error; }
 
-	if (buffer.at(RES_DATA_EMPTY_OFFSET) == RES_DATA_EMPTY_FLAG) { return err_data_empty; }
+	if (readUint16(RES_DATA_EMPTY_OFFSET) == RES_DATA_FLAG_EMPTY) { return err_data_empty; }
 
 	return err_ok;
 }

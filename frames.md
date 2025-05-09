@@ -117,8 +117,8 @@ a0 00 17 0f 00 00 40 08 00 00 80 00 ef 00 2c 08 00 06 00 2c 40 -> request data, 
 ```
 a0 00 1a 0d 00 08 00 00 40 00 ef 00 80 00 2c 00 1f 73 83
 a0 00 1a 0d 00 08 00 00 40 00 ef 00 80 00 a2 00 2c 6c 6c
-                                 || ||    || ^^ ^^ - data for requested code (int16BE)
-                                 || ||    ^^ - 0x2c -> data available, 0xa2 -> data not available
+                                 || || || || ^^ ^^ - data for requested code (int16BE)
+                                 || || ^^ ^^ - 0x002c -> data available, 0x00a2 -> data not available
                                  ^^ ^^ - response to frame with this type ?
 ```
 ## Commands

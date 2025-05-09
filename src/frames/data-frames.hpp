@@ -135,9 +135,9 @@ const RequestsMap requestsMap = {
 #define RES_DATA_SRC FRAME_SRC_DST_MASTER
 #define RES_DATA_DST FRAME_SRC_DST_REMOTE
 #define RES_DATA_VALUE_OFFSET 15
-#define RES_DATA_EMPTY_OFFSET 14
-#define RES_DATA_EMPTY_FLAG 0xa2
-#define RES_DATA_NOT_EMPTY_FLAG 0x2c
+#define RES_DATA_EMPTY_OFFSET 13
+#define RES_DATA_FLAG_EMPTY 0x00a2
+#define RES_DATA_FLAG_NOT_EMPTY 0x002c
 
 class DataResFrame : public EstiaFrame {
   private:
