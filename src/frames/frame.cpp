@@ -72,8 +72,12 @@ bool EstiaFrame::setByte(uint8_t offset, uint8_t value, bool updateCrc) {
 	return true;
 }
 
-uint8_t* EstiaFrame::getBuffer() {
+const uint8_t* EstiaFrame::data() const {
 	return buffer.data();
+}
+
+uint8_t EstiaFrame::size() const {
+	return buffer.size();
 }
 
 void EstiaFrame::updateCrc() {

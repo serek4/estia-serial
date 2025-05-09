@@ -303,7 +303,7 @@ void EstiaSerial::write(const FrameBuffer& frame, bool disableRx) {
 }
 
 void EstiaSerial::write(const EstiaFrame& frame, bool disableRx) {
-	this->write(frame.buffer.data(), frame.buffer.size(), disableRx);
+	this->write(frame.data(), frame.size(), disableRx);
 }
 
 void EstiaSerial::read(ReadBuffer& buffer, bool byteDelay) {

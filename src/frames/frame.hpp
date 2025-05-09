@@ -90,6 +90,8 @@ using FrameBuffer = std::vector<uint8_t>;
 class EstiaFrame {
   private:
   protected:
+	FrameBuffer buffer;
+	uint8_t length;
 	uint8_t type;
 	uint8_t dataLength;
 	uint16_t src;
@@ -100,9 +102,12 @@ class EstiaFrame {
 	void setSrc(uint16_t src, bool updateCrc = false);
 	void setDst(uint16_t dst, bool updateCrc = false);
 	void setDataType(uint16_t dataType, bool updateCrc = false);
+	bool insertData(uint8_t* data, bool incHeader = true, bool updateCrc = false);
+	bool setByte(uint8_t offset, uint8_t value, bool updateCrc = false);
 	bool writeUint16(uint8_t offset, uint16_t data);
 	uint16_t readUint16(uint8_t offset);
 	uint8_t checkFrame(uint8_t type, uint16_t dataType);
+	void updateCrc();
 
   public:
 	enum Error {
@@ -118,13 +123,8 @@ class EstiaFrame {
 	EstiaFrame(FrameBuffer& buffer, uint8_t length);
 	EstiaFrame(uint8_t type, uint8_t length);
 
-	uint8_t length;
-	FrameBuffer buffer;
-
-	bool setByte(uint8_t offset, uint8_t value, bool updateCrc = false);
-	uint8_t* getBuffer();
-	void updateCrc();
-	bool insertData(uint8_t* data, bool incHeader = true, bool updateCrc = false);
+	const uint8_t* data() const;
+	uint8_t size() const;
 	template <typename Buffer>
 	static bool writeUint16(Buffer& buffer, uint8_t offset, uint16_t data);
 	template <typename Buffer>
