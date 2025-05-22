@@ -286,10 +286,7 @@ void EstiaSerial::write(const uint8_t* buffer, uint8_t len, bool disableRx) {
 		serial->enableRx(false);    // disable RX
 	}
 	serial->enableIntTx(true);    // enable TX
-	for (uint8_t idx; idx < len; idx++) {
-		serial->write(buffer[idx]);
-	}
-	// serial->write(buffer, len);
+	serial->write(buffer, len);
 	serial->enableIntTx(false);    // disable TX
 	if (disableRx) {
 		serial->flush();           // empty serial RX buffer
@@ -298,11 +295,8 @@ void EstiaSerial::write(const uint8_t* buffer, uint8_t len, bool disableRx) {
 	digitalWrite(LED_BUILTIN, HIGH);
 }
 
-void EstiaSerial::write(const FrameBuffer& frame, bool disableRx) {
-	this->write(frame.data(), frame.size(), disableRx);
-}
-
-void EstiaSerial::write(const EstiaFrame& frame, bool disableRx) {
+template <typename Frame>
+void EstiaSerial::write(const Frame& frame, bool disableRx) {
 	this->write(frame.data(), frame.size(), disableRx);
 }
 

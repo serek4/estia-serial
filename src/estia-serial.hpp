@@ -115,6 +115,6 @@ class EstiaSerial {
 	void setMode(std::string mode, uint8_t onOff);
 	void setTemperature(std::string zone, uint8_t temperature);
 	void forceDefrost(uint8_t onOff);
-	void write(const FrameBuffer& frame, bool disableRx = true);
-	void write(const EstiaFrame& frame, bool disableRx = true);
+	template <typename Frame>
+	void write(const Frame& frame, bool disableRx = true);
 };
