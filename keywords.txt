@@ -41,6 +41,7 @@ SwitchFrame   KEYWORD1
 TemperatureByName   KEYWORD1
 TemperatureFrame   KEYWORD1
 ForcedDefrostFrame   KEYWORD1
+AckFrame    KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -79,6 +80,7 @@ stringify  KEYWORD2
 readBuffToFrameBuff  KEYWORD2
 isStatusFrame  KEYWORD2
 isStatusUpdateFrame  KEYWORD2
+isAckFrame  KEYWORD2
 
 decode  KEYWORD2
 

@@ -11,8 +11,8 @@ a0 00 xx xx xx xx xx xx xx xx xx xx xx xx xx xx
 ```
 ### Frame types
 ```
-0x10 5s heartbeat
-0x11 remote request
+0x10 control frame
+0x11 command
 0x12 at boot
 0x15 second remote?
 0x17 data request
@@ -49,11 +49,11 @@ a0 00 xx xx xx xx xx xx xx xx xx xx xx xx xx xx
 03 c4 - mode change
 00 41 - operation switch
 03 c1 - temperature change
-00 15 - force defrost
+00 15 - special command
 00 80 - data request
 00 ef - data response
 00 a1 - ack
-00 2b - short status
+00 2b - short status (and ping?)
 ```
 ## Status frames
 ###  Heartbeat frame, `13` bytes
@@ -100,8 +100,6 @@ a0 00 55 09 00 00 40 08 00 03 c6 00 00 ae 4c
 ### short status frame, `17` bytes
 ```
 a0 00 58 0b 00 08 00 00 fe 00 2b 00 00 01 32 7c 58
-
-a0 00 18 09 00 08 00 00 40 00 a1 00 2b ed b3 # short status frame ack?
 ```
 ## Data request
 ### data request frame, `21` bytes
@@ -210,6 +208,16 @@ a0 00 11 0c 00 00 40 08 00 03 c1 04 5c 7a 76 5c  crc  -> command 0x04, value off
 ```
 a0 00 11 0c 00 00 40 08 00 03 c1 08 00 12 78 5c e5 c4
 a0 00 11 0c 00 00 40 08 00 03 c1 08 00 00 70 00 83 c0 -> command 0x08, value offset 14, value = (temp + 16) * 2
+```
+### `13` bytes
+
+command byte `none`
+
+#### empty command (ping?) every 30min
+```
+a0 00 11 07 00 00 40 08 00 00 2b 15 f6
+
+a0 00 18 09 00 08 00 00 40 00 a1 00 2b ed b3 # ping frame ack (pong?)
 ```
 ### ack frame, `15` bytes
 ```

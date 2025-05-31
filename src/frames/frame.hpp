@@ -33,8 +33,8 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_DATA_TYPE_OFFSET 9
 #define FRAME_DATA_OFFSET 11
 
-#define FRAME_TYPE_HEARTBEAT 0x10
-#define FRAME_TYPE_SET 0x11
+#define FRAME_TYPE_CTRL_FRAME 0x10
+#define FRAME_TYPE_CMD 0x11
 #define FRAME_TYPE_REQ_DATA 0x17
 #define FRAME_TYPE_ACK 0x18
 #define FRAME_TYPE_RES_DATA 0x1a
@@ -52,7 +52,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_DATA_TYPE_MODE_CHANGE 0x03c4
 #define FRAME_DATA_TYPE_OPERATION_SWITCH 0x0041
 #define FRAME_DATA_TYPE_TEMPERATURE_CHANGE 0x03c1
-#define FRAME_DATA_TYPE_FORCE_DEFROST 0x0015
+#define FRAME_DATA_TYPE_SPECIAL_CMD 0x0015
 #define FRAME_DATA_TYPE_DATA_REQUEST 0x0080
 #define FRAME_DATA_TYPE_DATA_RESPONSE 0x00ef
 #define FRAME_DATA_TYPE_ACK 0x00a1

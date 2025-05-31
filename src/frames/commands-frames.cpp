@@ -19,7 +19,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #include "commands-frames.hpp"
 
 SetModeFrame::SetModeFrame(uint8_t mode, uint8_t onOff)
-    : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_SET_MODE_LEN)
+    : EstiaFrame::EstiaFrame(FRAME_TYPE_CMD, FRAME_SET_MODE_LEN)
     , mode(mode)
     , onOff(modeOnOff(onOff)) {
 	setSrc(SET_MODE_SRC);
@@ -49,7 +49,7 @@ uint8_t SetModeFrame::modeOnOff(uint8_t onOff) {
 }
 
 SwitchFrame::SwitchFrame(uint8_t operation, uint8_t onOff)
-    : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_SWITCH_LEN)
+    : EstiaFrame::EstiaFrame(FRAME_TYPE_CMD, FRAME_SWITCH_LEN)
     , operation(operation)
     , onOff(operationOnOff(onOff)) {
 	setSrc(SWITCH_SRC);
@@ -75,7 +75,7 @@ uint8_t SwitchFrame::operationOnOff(uint8_t onOff) {
 }
 
 TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature)
-    : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_TEMPERATURE_LEN)
+    : EstiaFrame::EstiaFrame(FRAME_TYPE_CMD, FRAME_TEMPERATURE_LEN)
     , zone(zone)
     , heatingTemperature(constrainTemp(heatingTemperature))
     , zone2Temperature(constrainTemp(zone2Temperature))
@@ -118,11 +118,11 @@ uint8_t TemperatureFrame::convertTemp(uint8_t temperature) {
 }
 
 ForcedDefrostFrame::ForcedDefrostFrame(uint8_t onOff)
-    : EstiaFrame::EstiaFrame(FRAME_TYPE_SET, FRAME_FORCE_DEFROST_LEN)
+    : EstiaFrame::EstiaFrame(FRAME_TYPE_CMD, FRAME_FORCE_DEFROST_LEN)
     , onOff(onOff) {
 	setSrc(FORCE_DEFROST_SRC);
 	setDst(FORCE_DEFROST_DST);
-	setDataType(FRAME_DATA_TYPE_FORCE_DEFROST);
+	setDataType(FRAME_DATA_TYPE_SPECIAL_CMD);
 	setByte(FORCE_DEFROST_CODE_OFFSET, FORCE_DEFROST_CODE);
 	setByte(FORCE_DEFROST_VALUE_OFFSET, this->onOff, true);
 }
