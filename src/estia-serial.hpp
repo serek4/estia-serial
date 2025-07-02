@@ -117,4 +117,6 @@ class EstiaSerial {
 	void forceDefrost(uint8_t onOff);
 	template <typename Frame>
 	void write(const Frame& frame, bool disableRx = true);
+
+	friend class SmartTarget;
 };
