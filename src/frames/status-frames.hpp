@@ -23,6 +23,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 struct StatusData {
 	uint8_t error;
 	bool extendedData;
+	bool cooling;
 	bool heating;
 	bool hotWater;
 	bool autoMode;

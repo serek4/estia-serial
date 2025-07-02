@@ -35,6 +35,8 @@ DataResFrame    KEYWORD1
 
 ModeByName  KEYWORD1
 SetModeFrame    KEYWORD1
+OperationModeByName KEYWORD1
+OperationMode   KEYWORD1
 SwitchOperationByName   KEYWORD1
 SwitchFrame KEYWORD1
 TemperatureByName   KEYWORD1

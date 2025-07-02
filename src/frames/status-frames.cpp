@@ -34,8 +34,9 @@ StatusData StatusFrame::decode() {
 	data.error = error;
 	if (error == err_ok) {
 		data.extendedData = longFrame;
+		data.cooling = (buffer.at(11) & 0xa1) == 0xa1;
 		data.heating = (buffer.at(11) & 0xc1) == 0xc1;
-		data.hotWater = (buffer.at(11) & 0xc2) == 0xc2;
+		data.hotWater = (buffer.at(11) & 0x02) >> 1 == 0x01;
 		data.autoMode = (buffer.at(12) & 0x04) >> 2 == 0x01;
 		data.quietMode = (buffer.at(12) & 0x10) >> 4 == 0x01;
 		data.nightMode = (buffer.at(12) & 0x20) >> 5 == 0x01;

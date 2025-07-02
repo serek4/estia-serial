@@ -50,6 +50,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_DATA_TYPE_HEARTBEAT 0x008a
 #define FRAME_DATA_TYPE_STATUS 0x03c6
 #define FRAME_DATA_TYPE_MODE_CHANGE 0x03c4
+#define FRAME_DATA_TYPE_OPERATION_MODE 0x03c0
 #define FRAME_DATA_TYPE_OPERATION_SWITCH 0x0041
 #define FRAME_DATA_TYPE_TEMPERATURE_CHANGE 0x03c1
 #define FRAME_DATA_TYPE_SPECIAL_CMD 0x0015
@@ -62,6 +63,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_DATA_HEADER_LEN 0x07
 #define FRAME_HEARTBEAT_DATA_LEN 0x07
 #define FRAME_SET_MODE_DATA_LEN 0x0b
+#define FRAME_OPERATION_MODE_DATA_LEN 0x08
 #define FRAME_SWITCH_DATA_LEN 0x08
 #define FRAME_TEMPERATURE_DATA_LEN 0x0c
 #define FRAME_REQ_DATA_DATA_LEN 0x0f
@@ -75,6 +77,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_MIN_LEN FRAME_HEAD_AND_CRC_LEN + FRAME_MIN_DATA_LEN
 #define FRAME_HEARTBEAT_LEN 13
 #define FRAME_SET_MODE_LEN 17
+#define FRAME_OPERATION_MODE_LEN 14
 #define FRAME_SWITCH_LEN 14
 #define FRAME_TEMPERATURE_LEN 18
 #define FRAME_REQ_DATA_LEN 21

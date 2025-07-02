@@ -48,6 +48,19 @@ uint8_t SetModeFrame::modeOnOff(uint8_t onOff) {
 	return onOff;
 }
 
+OperationMode::OperationMode(uint8_t mode)
+    : EstiaFrame::EstiaFrame(FRAME_TYPE_CMD, FRAME_OPERATION_MODE_LEN)
+    , mode(mode) {
+	setSrc(OPERATION_MODE_SRC);
+	setDst(OPERATION_MODE_DST);
+	setDataType(FRAME_DATA_TYPE_OPERATION_MODE);
+	setByte(OPERATION_MODE_OFFSET, this->mode, true);
+}
+
+OperationMode::OperationMode(std::string mode)
+    : OperationMode::OperationMode(operationModeByName.at(mode)) {
+}
+
 SwitchFrame::SwitchFrame(uint8_t operation, uint8_t onOff)
     : EstiaFrame::EstiaFrame(FRAME_TYPE_CMD, FRAME_SWITCH_LEN)
     , operation(operation)
@@ -64,7 +77,7 @@ SwitchFrame::SwitchFrame(std::string operation, uint8_t onOff)
 
 uint8_t SwitchFrame::operationOnOff(uint8_t onOff) {
 	switch (operation) {
-		case SWITCH_OPERATION_HEATING:
+		case SWITCH_OPERATION_COOL_HEAT:
 			return operation + onOff;
 			break;
 		case SWITCH_OPERATION_HOT_WATER:

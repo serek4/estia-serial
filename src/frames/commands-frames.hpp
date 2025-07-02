@@ -62,13 +62,39 @@ class SetModeFrame : public EstiaFrame {
 	SetModeFrame(std::string mode, uint8_t onOff);
 };
 
+// cooling/heating operation
+// a0 00 11 08 00 00 40 08 00 03 c0 05 b1 7c             -> cooling, 0x05
+// a0 00 11 08 00 00 40 08 00 03 c0 06 83 e7             -> heating, 0x06
+
+#define OPERATION_MODE_SRC FRAME_SRC_DST_REMOTE
+#define OPERATION_MODE_DST FRAME_SRC_DST_MASTER
+#define OPERATION_MODE_OFFSET 11
+#define OPERATION_MODE_COOLING 0x05
+#define OPERATION_MODE_HEATING 0x06
+
+using OperationModeByName = std::unordered_map<std::string, uint8_t>;
+
+const OperationModeByName operationModeByName = {
+    {"cooling", OPERATION_MODE_COOLING},
+    {"heating", OPERATION_MODE_HEATING}};
+
+class OperationMode : public EstiaFrame {
+  private:
+	uint8_t mode;
+
+  public:
+	OperationMode(uint8_t mode);
+	OperationMode(std::string mode);
+};
+
+
 #define SWITCH_SRC FRAME_SRC_DST_REMOTE
 #define SWITCH_DST FRAME_SRC_DST_MASTER
 #define SWITCH_VALUE_OFFSET 11
-#define SWITCH_OPERATION_HEATING 0x22
+#define SWITCH_OPERATION_COOL_HEAT 0x22
 #define SWITCH_OPERATION_HOT_WATER 0x28
 
-// heating on/off
+// cooling/heating on/off
 // a0 00 11 08 00 00 40 08 00 00 41 23 8f 38 -> on,  0x23 offset 11
 // a0 00 11 08 00 00 40 08 00 00 41 22 9e b1 -> off, 0x22 offset 11
 // hot water on/off
@@ -78,7 +104,8 @@ class SetModeFrame : public EstiaFrame {
 using SwitchOperationByName = std::unordered_map<std::string, uint8_t>;
 
 const SwitchOperationByName switchOperationByName = {
-    {"heating", SWITCH_OPERATION_HEATING},
+    {"cooling", SWITCH_OPERATION_COOL_HEAT},
+    {"heating", SWITCH_OPERATION_COOL_HEAT},
     {"hot_water", SWITCH_OPERATION_HOT_WATER}};
 
 class SwitchFrame : public EstiaFrame {

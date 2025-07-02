@@ -47,7 +47,8 @@ a0 00 xx xx xx xx xx xx xx xx xx xx xx xx xx xx
 00 8a - heartbeat
 03 c6 - status
 03 c4 - mode change
-00 41 - operation switch
+03 c0 - operation mode change (heating/cooling)
+00 41 - operation switch (on/off)
 03 c1 - temperature change
 00 15 - special command
 00 80 - data request
@@ -68,6 +69,7 @@ a0 00 58 19 00 08 00 00 fe 03 c6 c2 24 18 78 60 7a 78 5e 55 00 10 00 00 00 e9 58
 a0 00 58 19 00 08 00 00 fe 03 c6 c1 00 10 76 5c 7a 76 5c 7a 00 00 00 00 00 e9 7d 5a 00 34 e2
 a0 00 58 19 00 08 00 00 fe 03 c6 c0 20 00 76 5a 7a 76 50 70 00 10 00 00 00 e9 5d 58 00 ca 49
 a0 00 58 19 00 08 00 00 fe 03 c6 c0 00 00 76 5a 7a 76 5a 7a 00 00 00 00 00 e9 5d 58 00 a6 1c
+a0 00 58 19 00 08 00 00 fe 03 c6 a1 10 10 76 48 48 76 48 48 00 00 00 00 00 e9 7f 4e 00 94 b7 - cooling
                                  || || || || || || || || ||    ||             || ^^ 27 - TWI (0x68 / 0x02 - 0x10) ?
                                  || || || || || || || || ||    ||             ^^ 26 - TWO (0x58 / 0x02 - 0x10) ?
                                  || || || || || || || || ||    ^^ 21 - +0x02 defrost in progress, +0x10 night mode active
@@ -79,19 +81,22 @@ a0 00 58 19 00 08 00 00 fe 03 c6 c0 00 00 76 5a 7a 76 5a 7a 00 00 00 00 00 e9 5d
                                  || || || ^^ 14 - hot water temperature 0x76 / 0x02 - 0x10
                                  || || ^^ 13 - 0x00 -> off, +0x01 backup e-heater, +0x02 heating cmp on, +0x04 HW e-heater, +0x08 HW cmp on, +0x10 -> pump1 on
                                  || ^^ 12 - 0x00 off, +0x04 auto mode on, +0x10 quiet on, +0x20 night on
-                                 ^^ 11 - 0xc0 all off, +0x01 heating on, +0x02 hot water on, 0xc3 heating + hot water
+                                 |^ 11 - 0xc_ heating, 0xa_ cooling
+                                 ^  11 - 0x_0 all off, +0x01 heating/cooling on, +0x02 hot water on, 0xc3 heating + hot water, 0xa3 cooling + hot water
 ```
 ### status update frame, `21` bytes
 ```
 a0 00 1c 0f 00 08 00 00 fe 03 c6 c1 00 12 76 60 7a 00 00 15 4c
 a0 00 1c 0f 00 08 00 00 fe 03 c6 c0 20 00 76 5a 7a 10 00 b8 5b
+a0 00 1c 0f 00 08 00 00 fe 03 c6 a1 10 00 76 48 48 00 00 60 ff - cooling
                                  || || || || || || ^^ 17 - +0x02 defrost in progress, +0x10 night mode active
                                  || || || || || ^^ 16 - zone 2 temperature 0x7a / 0x02 - 0x10 ?
                                  || || || || ^^ 15 - zone1 temperature 0x60 / 0x02 - 0x10
                                  || || || ^^ 14 - hot water temperature 0x76 / 0x02 - 0x10
                                  || || ^^ 13 - 0x00 -> off, +0x01 backup e-heater, +0x02 heating cmp on, +0x04 HW e-heater, +0x08 HW cmp on, +0x10 -> pump1 on
                                  || ^^ 12 - 0x00 off, +0x04 auto mode on, +0x10 quiet on, +0x20 night on
-                                 ^^ 11 - 0xc0 all off, +0x01 heating on, +0x02 hot water on, 0xc3 heating + hot water
+                                 |^ 11 - 0xc_ heating, 0xa_ cooling
+                                 ^  11 - 0x_0 all off, +0x01 heating/cooling on, +0x02 hot water on, 0xc3 heating + hot water, 0xa3 cooling + hot water
 ```
 ### status frame, `15` bytes
 ```
@@ -124,6 +129,11 @@ a0 00 1a 0d 00 08 00 00 40 00 ef 00 80 00 a2 00 2c 6c 6c
 
 command byte `11`  
 
+#### heating/cooling switch
+```
+a0 00 11 08 00 00 40 08 00 03 c0 06 83 e7             -> heating, 0x06
+a0 00 11 08 00 00 40 08 00 03 c0 05 b1 7c             -> cooling, 0x05
+```
 #### heating on/off
 ```
 a0 00 11 08 00 00 40 08 00 00 41 23 8f 38             -> on,  0x23
