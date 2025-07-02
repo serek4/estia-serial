@@ -29,18 +29,19 @@ Code is written to work on Arduino esp32 or Arduino esp8266.
 - [EspSoftwareSerial](https://github.com/plerup/espsoftwareserial)
 
 ## Implemented features
+- cooling on-off
 - heating on-off
 - hot water on-off
 - auto mode on-off
 - quiet mode on-off
 - night mode on-off
 - forced defrost on-off
+- cooling temperature change
 - heating temperature change
 - hot water temperature change
 - data requests
 
 ## To do
-- cooling
 - zone 2
 - hot water boost
 - anti bacteria
@@ -59,8 +60,13 @@ I have 11kW model, so if there is default value depending on model 11kW is used.
 
 ## Commands
 
+### Set operation mode
+mode: `cooling`, `heating`  
+```c++
+estiaSerial.setOperationMode(std::string mode);
+```
 ### Set mode
-mode: `auto`, `quiet`\*, `night`, `heating`, `hot_water`  
+mode: `auto`, `quiet`\*, `night`, `cooling`, `heating`, `hot_water`  
 onOff: `1` | `0`
 ```c++
 estiaSerial.setMode(std::string mode, uint8_t onOff);
@@ -68,8 +74,8 @@ estiaSerial.setMode(std::string mode, uint8_t onOff);
 \* quiet mode must be enabled in controller
 ### Set temperature
 
-zone: `heating`, `hot_water`  
-temperature: for heating `20-65`, for hot water `40-75`
+zone: `cooling`, `heating`, `hot_water`  
+temperature: for cooling `7-25`, for heating `20-65`, for hot water `40-75`
 
 ```c++
 estiaSerial.setTemperature(std::string zone, uint8_t temperature);

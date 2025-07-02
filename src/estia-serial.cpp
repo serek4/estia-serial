@@ -230,17 +230,32 @@ void EstiaSerial::modeSwitch(std::string mode, uint8_t onOff) {
 }
 
 /**
-* @param operation `heating` `hot_water`
+* @param mode `cooling` `heating`
+*/
+void EstiaSerial::setOperationMode(std::string mode) {
+	if (operationModeByName.count(mode) == 0) { return; }
+
+	OperationMode operationMode(mode);
+	this->queueCommand(operationMode);
+}
+
+/**
+* @param operation `cooling` `heating` `hot_water`
 * @param onOff `1` `0`
 */
 void EstiaSerial::operationSwitch(std::string operation, uint8_t onOff) {
 	if (switchOperationByName.count(operation) == 0) { return; }
+
+	// set operation mode (for cooling and heating)
+	if (operationModeByName.count(operation) != 0 && statusData.operationMode != operationModeByName.at(operation)) {
+		setOperationMode(operation);
+	}
 	SwitchFrame switchFrame(operation, onOff);
 	this->queueCommand(switchFrame);
 }
 
 /**
-* @param mode `auto` `quiet` `night` `heating` `hot_water`
+* @param mode `auto` `quiet` `night` `cooling` `heating` `hot_water`
 * @param onOff `1` `0`
 */
 void EstiaSerial::setMode(std::string mode, uint8_t onOff) {
@@ -249,23 +264,29 @@ void EstiaSerial::setMode(std::string mode, uint8_t onOff) {
 }
 
 /**
-* @param zone `heating` `hot_water`
-* @param temperature for heating `20-65`, for hot water `40-75`
+* @param zone `cooling` `heating` `hot_water`
+* @param temperature for cooling `7-25`, for heating `20-65`, for hot water `40-75`
 */
 void EstiaSerial::setTemperature(std::string zone, uint8_t temperature) {
 	if (temperatureByName.count(zone) == 0) { return; }
-	uint8_t heating = statusData.heatingTarget;
+	uint8_t zone1 = statusData.zone1Target;
 	uint8_t zone2 = statusData.zone2Target;
 	uint8_t hotWater = statusData.hotWaterTarget;
 	switch (temperatureByName.at(zone)) {
-		case TEMPERATURE_HEATING_CODE:
-			heating = temperature;
-			break;
-		case TEMPERATURE_HOT_WATER_CODE:
-			hotWater = temperature;
-			break;
+	case TEMPERATURE_COOLING_CODE:
+		zone1 = temperature;
+		zone2 = temperature;
+		break;
+
+	case TEMPERATURE_HEATING_CODE:
+		zone1 = temperature;
+		break;
+
+	case TEMPERATURE_HOT_WATER_CODE:
+		hotWater = temperature;
+		break;
 	}
-	TemperatureFrame temperatureFrame(temperatureByName.at(zone), heating, zone2, hotWater);
+	TemperatureFrame temperatureFrame(temperatureByName.at(zone), zone1, zone2, hotWater);
 	this->queueCommand(temperatureFrame);
 }
 

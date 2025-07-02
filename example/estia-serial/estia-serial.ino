@@ -67,22 +67,25 @@ void loop() {
 
 void printStatusData(StatusData& data) {
 	if (data.error == StatusFrame::err_ok) {
+		Serial.printf("operationMode:     %s\n", data.operationMode == 0x06 ? "heating" : "cooling");
+		Serial.printf("cooling:           %s\n", data.cooling ? "on" : "off");
 		Serial.printf("heating:           %s\n", data.heating ? "on" : "off");
 		Serial.printf("hotWater:          %s\n", data.hotWater ? "on" : "off");
 		Serial.printf("autoMode:          %s\n", data.autoMode ? "on" : "off");
 		Serial.printf("quietMode:         %s\n", data.quietMode ? "on" : "off");
 		Serial.printf("nightMode:         %s\n", data.nightMode ? "on" : "off");
 		Serial.printf("backupHeater:      %s\n", data.backupHeater ? "on" : "off");
+		Serial.printf("coolingCMP:        %s\n", data.coolingCMP ? "on" : "off");
 		Serial.printf("heatingCMP:        %s\n", data.heatingCMP ? "on" : "off");
 		Serial.printf("hotWaterHeater:    %s\n", data.hotWaterHeater ? "on" : "off");
 		Serial.printf("hotWaterCMP:       %s\n", data.hotWaterCMP ? "on" : "off");
 		Serial.printf("pump1:             %s\n", data.pump1 ? "on" : "off");
 		Serial.printf("hotWaterTarget:    %u\n", data.hotWaterTarget);
-		Serial.printf("heatingTarget:     %u\n", data.heatingTarget);
+		Serial.printf("zone1Target:       %u\n", data.zone1Target);
 		Serial.printf("zone2Target:       %u\n", data.zone2Target);
 		if (data.extendedData) {
 			Serial.printf("hotWaterTarget2:   %u\n", data.hotWaterTarget2);
-			Serial.printf("heatingTarget2:    %u\n", data.heatingTarget2);
+			Serial.printf("zone1Target2:      %u\n", data.zone1Target2);
 			Serial.printf("zone2Target2:      %u\n", data.zone2Target2);
 		}
 		Serial.printf("defrostInProgress: %s\n", data.defrostInProgress ? "true" : "false");

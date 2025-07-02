@@ -123,19 +123,23 @@ class SwitchFrame : public EstiaFrame {
 #define TEMPERATURE_SRC FRAME_SRC_DST_REMOTE
 #define TEMPERATURE_DST FRAME_SRC_DST_MASTER
 #define TEMPERATURE_CODE_OFFSET 11
+#define TEMPERATURE_COOLING_CODE 0x01
 #define TEMPERATURE_HEATING_CODE 0x02
 #define TEMPERATURE_HOT_WATER_CODE 0x08
-#define TEMPERATURE_HEATING_VALUE_OFFSET 12
+#define TEMPERATURE_ZONE1_VALUE_OFFSET 12
 #define TEMPERATURE_ZONE2_VALUE_OFFSET 13
 #define TEMPERATURE_HOT_WATER_VALUE_OFFSET 14
-#define TEMPERATURE_HEATING_VALUE2_OFFSET 15
+#define TEMPERATURE_ZONE1_VALUE2_OFFSET 15
 
 using TemperatureByName = std::unordered_map<std::string, uint8_t>;
 
 const TemperatureByName temperatureByName = {
+    {"cooling", TEMPERATURE_COOLING_CODE},
     {"heating", TEMPERATURE_HEATING_CODE},
     {"hot_water", TEMPERATURE_HOT_WATER_CODE}};
 
+// cooling temperature
+// a0 00 11 0c 00 00 40 08 00 03 c1 01 4a 4a 76 4a d4 3f -> cooling temperature change, offset 12, 13 and 15, value = (temp + 16) * 2
 // heating temperature
 // a0 00 11 0c 00 00 40 08 00 03 c1 02 5c 7a 76 5c b2 d1 -> heating temperature change, offset 12 and 15 value = (temp + 16) * 2
 // hot water temperature
@@ -144,7 +148,7 @@ const TemperatureByName temperatureByName = {
 class TemperatureFrame : public EstiaFrame {
   private:
 	uint8_t zone;
-	uint8_t heatingTemperature;
+	uint8_t zone1Temperature;
 	uint8_t zone2Temperature;
 	uint8_t hotWaterTemperature;
 
@@ -152,7 +156,7 @@ class TemperatureFrame : public EstiaFrame {
 	uint8_t convertTemp(uint8_t temperature);
 
   public:
-	TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature);
+	TemperatureFrame(uint8_t zone, uint8_t zone1Temperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature);
 };
 
 #define FORCE_DEFROST_SRC FRAME_SRC_DST_REMOTE

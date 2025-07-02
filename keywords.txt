@@ -65,6 +65,7 @@ getStatusData   KEYWORD2
 requestData KEYWORD2
 clearSensorsData    KEYWORD2
 requestSensorsData  KEYWORD2
+setOperationMode    KEYWORD2
 setMode KEYWORD2
 setTemperature  KEYWORD2
 forceDefrost    KEYWORD2

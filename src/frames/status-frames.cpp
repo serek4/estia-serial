@@ -34,6 +34,7 @@ StatusData StatusFrame::decode() {
 	data.error = error;
 	if (error == err_ok) {
 		data.extendedData = longFrame;
+		data.operationMode = (buffer.at(11) & 0xe0) >> 5;
 		data.cooling = (buffer.at(11) & 0xa1) == 0xa1;
 		data.heating = (buffer.at(11) & 0xc1) == 0xc1;
 		data.hotWater = (buffer.at(11) & 0x02) >> 1 == 0x01;
@@ -41,16 +42,17 @@ StatusData StatusFrame::decode() {
 		data.quietMode = (buffer.at(12) & 0x10) >> 4 == 0x01;
 		data.nightMode = (buffer.at(12) & 0x20) >> 5 == 0x01;
 		data.backupHeater = (buffer.at(13) & 0x01) >> 0 == 0x01;
-		data.heatingCMP = (buffer.at(13) & 0x02) >> 1 == 0x01;
+		data.coolingCMP = (buffer.at(13) & 0x02) >> 1 == 0x01 && data.operationMode == 0x05;
+		data.heatingCMP = (buffer.at(13) & 0x02) >> 1 == 0x01 && data.operationMode == 0x06;
 		data.hotWaterHeater = (buffer.at(13) & 0x04) >> 2 == 0x01;
 		data.hotWaterCMP = (buffer.at(13) & 0x08) >> 3 == 0x01;
 		data.pump1 = (buffer.at(13) & 0x10) >> 4 == 0x01;
 		data.hotWaterTarget = buffer.at(14) / 0x02 - 0x10;
-		data.heatingTarget = buffer.at(15) / 0x02 - 0x10;
+		data.zone1Target = buffer.at(15) / 0x02 - 0x10;
 		data.zone2Target = buffer.at(16) / 0x02 - 0x10;
 		if (longFrame) {
 			data.hotWaterTarget2 = buffer.at(17) / 0x02 - 0x10;
-			data.heatingTarget2 = buffer.at(18) / 0x02 - 0x10;
+			data.zone1Target2 = buffer.at(18) / 0x02 - 0x10;
 			data.zone2Target2 = buffer.at(19) / 0x02 - 0x10;
 			data.defrostInProgress = (buffer.at(21) & 0x02) == 0x02;
 			data.nightModeActive = (buffer.at(21) & 0x10) == 0x10;

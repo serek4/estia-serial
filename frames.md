@@ -206,6 +206,10 @@ a0 00 11 0a 00 00 40 08 00 00 15 00 46 00 f6 ac       -> off,             comman
 
 command byte `11`
 
+#### cooling temperature change
+```
+a0 00 11 0c 00 00 40 08 00 03 c1 01 4a 4a 76 4a d4 3f -> command 0x01, value offset 12, 13 and 15, value = (temp + 16) * 2
+```
 #### heating temperature change
 ```
 a0 00 11 0c 00 00 40 08 00 03 c1 02 5c 7a 76 5c b2 d1 -> command 0x02, value offset 12 and 15, value = (temp + 16) * 2

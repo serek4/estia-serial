@@ -35,15 +35,17 @@ SetModeFrame::SetModeFrame(std::string mode, uint8_t onOff)
 
 uint8_t SetModeFrame::modeOnOff(uint8_t onOff) {
 	switch (mode) {
-		case SET_AUTO_MODE_CODE:
-			return onOff;
-			break;
-		case SET_QUIET_MODE_CODE:
-			return onOff << 2;
-			break;
-		case SET_NIGHT_MODE_CODE:
-			return onOff << 3;
-			break;
+	case SET_AUTO_MODE_CODE:
+		return onOff;
+		break;
+
+	case SET_QUIET_MODE_CODE:
+		return onOff << 2;
+		break;
+
+	case SET_NIGHT_MODE_CODE:
+		return onOff << 3;
+		break;
 	}
 	return onOff;
 }
@@ -77,20 +79,21 @@ SwitchFrame::SwitchFrame(std::string operation, uint8_t onOff)
 
 uint8_t SwitchFrame::operationOnOff(uint8_t onOff) {
 	switch (operation) {
-		case SWITCH_OPERATION_COOL_HEAT:
-			return operation + onOff;
-			break;
-		case SWITCH_OPERATION_HOT_WATER:
-			return operation + (onOff << 2);
-			break;
+	case SWITCH_OPERATION_COOL_HEAT:
+		return operation + onOff;
+		break;
+
+	case SWITCH_OPERATION_HOT_WATER:
+		return operation + (onOff << 2);
+		break;
 	}
 	return onOff;
 }
 
-TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature)
+TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t zone1Temperature, uint8_t zone2Temperature, uint8_t hotWaterTemperature)
     : EstiaFrame::EstiaFrame(FRAME_TYPE_CMD, FRAME_TEMPERATURE_LEN)
     , zone(zone)
-    , heatingTemperature(constrainTemp(heatingTemperature))
+    , zone1Temperature(constrainTemp(zone1Temperature))
     , zone2Temperature(constrainTemp(zone2Temperature))
     , hotWaterTemperature(constrainTemp(hotWaterTemperature)) {
 	setSrc(TEMPERATURE_SRC);
@@ -98,30 +101,34 @@ TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t heatingTemperature, uin
 	setDataType(FRAME_DATA_TYPE_TEMPERATURE_CHANGE);
 	setByte(TEMPERATURE_CODE_OFFSET, zone);
 	switch (zone) {
-		case TEMPERATURE_HEATING_CODE:
-			setByte(TEMPERATURE_HEATING_VALUE_OFFSET, convertTemp(heatingTemperature));
-			// can this two be 0x00?
-			setByte(TEMPERATURE_ZONE2_VALUE_OFFSET, convertTemp(zone2Temperature));
-			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature));
-			// do i need to set this too?
-			setByte(TEMPERATURE_HEATING_VALUE2_OFFSET, convertTemp(heatingTemperature), true);
-			break;
+	case TEMPERATURE_COOLING_CODE:
+	case TEMPERATURE_HEATING_CODE:
+		setByte(TEMPERATURE_ZONE1_VALUE_OFFSET, convertTemp(zone1Temperature));
+		setByte(TEMPERATURE_ZONE2_VALUE_OFFSET, convertTemp(zone2Temperature));
+		setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature));
+		setByte(TEMPERATURE_ZONE1_VALUE2_OFFSET, convertTemp(zone1Temperature), true);
+		break;
 
-		case TEMPERATURE_HOT_WATER_CODE:
-			setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature), true);
-			break;
+	case TEMPERATURE_HOT_WATER_CODE:
+		setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature), true);
+		break;
 	}
 }
 
 uint8_t TemperatureFrame::constrainTemp(uint8_t temperature) {
 	uint8_t constrained = temperature;
 	switch (zone) {
-		case TEMPERATURE_HEATING_CODE:
-			constrained = constrain(temperature, MIN_HEATING_TEMP, MAX_HEATING_TEMP);
-			break;
-		case TEMPERATURE_HOT_WATER_CODE:
-			constrained = constrain(temperature, MIN_HOT_WATER_TEMP, MAX_HOT_WATER_TEMP);
-			break;
+	case TEMPERATURE_COOLING_CODE:
+		constrained = constrain(temperature, MIN_COOLING_TEMP, MIN_COOLING_TEMP);
+		break;
+
+	case TEMPERATURE_HEATING_CODE:
+		constrained = constrain(temperature, MIN_HEATING_TEMP, MAX_HEATING_TEMP);
+		break;
+
+	case TEMPERATURE_HOT_WATER_CODE:
+		constrained = constrain(temperature, MIN_HOT_WATER_TEMP, MAX_HOT_WATER_TEMP);
+		break;
 	}
 	return constrained;
 }

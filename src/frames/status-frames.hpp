@@ -22,6 +22,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 
 struct StatusData {
 	uint8_t error;
+	uint8_t operationMode;
 	bool extendedData;
 	bool cooling;
 	bool heating;
@@ -30,15 +31,16 @@ struct StatusData {
 	bool quietMode;
 	bool nightMode;
 	bool backupHeater;
+	bool coolingCMP;
 	bool heatingCMP;
 	bool hotWaterHeater;
 	bool hotWaterCMP;
 	bool pump1;
 	uint8_t hotWaterTarget;
-	uint8_t heatingTarget;
+	uint8_t zone1Target;
 	uint8_t zone2Target;
 	uint8_t hotWaterTarget2;
-	uint8_t heatingTarget2;
+	uint8_t zone1Target2;
 	uint8_t zone2Target2;
 	bool defrostInProgress;
 	bool nightModeActive;

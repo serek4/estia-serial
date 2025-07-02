@@ -23,6 +23,8 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 
 #define TOSHIBA_ESTIA_MODEL 11    // 4kW, 6kW, 8kW, 11kW
 
+#define MIN_COOLING_TEMP 7     // 7-20, (default 7)
+#define MAX_COOLING_TEMP 25    // 18-30, (default 25)
 #define MIN_HEATING_TEMP 20    // 20-37 (default 20)
 #if TOSHIBA_ESTIA_MODEL < 8
 #define MAX_HEATING_TEMP 55    // 37-55 (default 55) for 4kW and 6kW
