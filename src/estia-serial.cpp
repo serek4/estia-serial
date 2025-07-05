@@ -145,20 +145,51 @@ uint16_t EstiaSerial::getAck() {
 }
 
 bool EstiaSerial::splitSnifferBuffer() {
-	if (snifferBuffer.size() >= FRAME_MIN_LEN) {
-		while (!snifferBuffer.empty()) {
-			if (!sniffedFrame.empty() && snifferBuffer.size() >= 2 && snifferBuffer.front() == 0xa0 && snifferBuffer.at(1) == 0x00) {
-				// next frame has already begun in snifferBuffer
-				break;
-			}
-			sniffedFrame.push_back(snifferBuffer.front());
-			snifferBuffer.pop_front();
+	if (snifferBuffer.size() <= FRAME_MIN_LEN) { return false; }
+
+	uint8_t frameSize = 0;
+	while (!snifferBuffer.empty()) {
+		// calculate expected frame length from data
+		if (frameSize == 0 && sniffedFrame.size() > FRAME_DATA_LEN_OFFSET) {
+			frameSize = sniffedFrame.at(FRAME_DATA_LEN_OFFSET) + FRAME_HEAD_AND_CRC_LEN;
 		}
-		sniffedFrames.push_back(sniffedFrame);
-		sniffedFrame.clear();
-		return true;
+		// next frame begin detected in sniffer buffer
+		if (!sniffedFrame.empty() && snifferBuffer.size() >= 2 && snifferBuffer.front() == FRAME_BEGIN
+		    && snifferBuffer.at(1) == 0x00) {
+			// frame shorter than expected and shorter than max
+			if (sniffedFrame.size() < frameSize && frameSize <= FRAME_MAX_LEN
+			    && sniffedFrame.size() <= FRAME_MAX_LEN) {
+				// read remaining data
+				this->read(snifferBuffer);
+				// push 0xa0 byte to current frame
+				sniffedFrame.push_back(snifferBuffer.front());
+				snifferBuffer.pop_front();
+				// and continue
+				continue;
+			}
+			// next frame has already begun in sniffer buffer
+			break;
+		}
+		// check for joined two frames (first probably malformed)
+		if (frameSize != 0 && sniffedFrame.size() > frameSize) {
+			// check sniffed frame for next frame begin byte (skip first byte)
+			for (uint8_t idx = 1; idx < sniffedFrame.size(); idx++) {
+				if (sniffedFrame.at(idx) == FRAME_BEGIN) {
+					FrameBuffer firstFrame(sniffedFrame.begin(), sniffedFrame.begin() + idx);
+					sniffedFrame.erase(sniffedFrame.begin(), sniffedFrame.begin() + idx);
+					sniffedFrames.push_back(firstFrame);
+					frameSize = 0;
+					break;
+				}
+			}
+		}
+		sniffedFrame.push_back(snifferBuffer.front());
+		snifferBuffer.pop_front();
 	}
-	return false;
+	sniffedFrames.push_back(sniffedFrame);
+	sniffedFrame.clear();
+
+	return true;
 }
 
 int16_t EstiaSerial::requestData(uint8_t requestCode) {
@@ -325,13 +356,13 @@ void EstiaSerial::read(ReadBuffer& buffer, bool byteDelay) {
 	digitalWrite(LED_BUILTIN, LOW);
 	while (serial->available()) {    // read response
 		uint8_t newByte = serial->read();
+		if (byteDelay) { delay(ESTIA_SERIAL_BYTE_DELAY); }
 		buffer.push_back(newByte);
 		if (buffer.size() > 2) {
 			if (buffer.back() == 0x00 && buffer.at(buffer.size() - 2) == 0xa0) {    // new frame already began
 				break;
 			}
 		}
-		if (byteDelay) { delay(ESTIA_SERIAL_BYTE_DELAY); }
 	}
 	digitalWrite(LED_BUILTIN, HIGH);
 }
