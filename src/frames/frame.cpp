@@ -59,7 +59,7 @@ EstiaFrame::EstiaFrame(uint8_t type, uint8_t length)
 		length = FRAME_MIN_LEN;
 		buffer.resize(FRAME_MIN_LEN, 0x00);
 	}
-	buffer.front() = FRAME_BEGIN;
+	buffer.front() = FRAME_BEGIN >> 8;
 	buffer.at(FRAME_TYPE_OFFSET) = type;
 	buffer.at(FRAME_DATA_LEN_OFFSET) = dataLength;
 }

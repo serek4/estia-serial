@@ -3,8 +3,9 @@
 ```
 <-header--> <---data header----> <-data-> <-crc->
 00 01 02 03 04 05 06 07 08 09 10 11       -1 last
-a0 00 xx xx xx xx xx xx xx xx xx xx xx xx xx xx
-|| || || ||                               ^^ ^^ - CRC-16/MCRF4XX
+a0 00 xx xx 00 xx xx xx xx xx xx xx xx xx xx xx
+|| || || || ||                            ^^ ^^ - CRC-16/MCRF4XX
+|| || || || ^^ - always 0x00
 || || || ^^ - dataLength
 || || ^^ - frame type
 ^^ ^^ - frame begin
@@ -30,9 +31,10 @@ a0 00 xx xx xx xx xx xx xx xx xx xx xx xx xx xx
 ```
 <---data header----> <-data->
 00 01 02 03 04 05 06 07
-   || || || || ^^ ^^ - data type
-   || || ^^ ^^ - destination
-   ^^ ^^ - source
+|| || || || || ^^ ^^ - data type
+|| || || ^^ ^^ - destination
+|| ^^ ^^ - source
+^^ - always 0x00
 ```
 #### sources/destinations
 ```

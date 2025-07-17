@@ -41,7 +41,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_TYPE_UPDATE 0x1c
 #define FRAME_TYPE_STATUS 0x58
 
-#define FRAME_BEGIN 0xa0
+#define FRAME_BEGIN 0xa000
 
 #define FRAME_SRC_DST_MASTER 0x0800
 #define FRAME_SRC_DST_REMOTE 0x0040
@@ -73,8 +73,10 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_UPDATE_DATA_LEN 0x0f
 #define FRAME_FORCE_DEFROST_DATA_LEN 0x0a
 
-#define FRAME_HEAD_AND_CRC_LEN 0x06
-#define FRAME_MIN_LEN FRAME_HEAD_AND_CRC_LEN + FRAME_MIN_DATA_LEN
+#define FRAME_HEAD_LEN 0x04
+#define FRAME_CRC_LEN 0x02
+#define FRAME_HEAD_AND_CRC_LEN (FRAME_HEAD_LEN + FRAME_CRC_LEN)
+#define FRAME_MIN_LEN (FRAME_HEAD_LEN + FRAME_MIN_DATA_LEN + FRAME_CRC_LEN)
 #define FRAME_MAX_LEN 45
 #define FRAME_HEARTBEAT_LEN 13
 #define FRAME_SET_MODE_LEN 17

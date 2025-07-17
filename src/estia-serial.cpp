@@ -57,7 +57,7 @@ EstiaSerial::SnifferState EstiaSerial::sniffer() {
 		this->read(snifferBuffer);
 		if (this->splitSnifferBuffer()) {
 			for (auto& frame : sniffedFrames) {
-				if (frame.front() != FRAME_BEGIN) { continue; }
+				if (EstiaFrame::readUint16(frame, 0) != FRAME_BEGIN) { continue; }
 				if (decodeStatus(frame)) { continue; }
 				decodeAck(frame);
 			}
@@ -143,17 +143,17 @@ uint16_t EstiaSerial::getAck() {
 }
 
 bool EstiaSerial::splitSnifferBuffer() {
-	if (snifferBuffer.size() <= FRAME_MIN_LEN) { return false; }
+	if (snifferBuffer.size() <= FRAME_HEAD_LEN) { return false; }
 
 	uint8_t frameSize = 0;
 	while (!snifferBuffer.empty()) {
 		// calculate expected frame length from data
-		if (frameSize == 0 && sniffedFrame.size() > FRAME_DATA_LEN_OFFSET) {
+		if (frameSize == 0 && sniffedFrame.size() >= FRAME_HEAD_LEN
+		    && EstiaFrame::readUint16(sniffedFrame, 0) == FRAME_BEGIN) {
 			frameSize = sniffedFrame.at(FRAME_DATA_LEN_OFFSET) + FRAME_HEAD_AND_CRC_LEN;
 		}
 		// next frame begin detected in sniffer buffer
-		if (!sniffedFrame.empty() && snifferBuffer.size() >= 2 && snifferBuffer.front() == FRAME_BEGIN
-		    && snifferBuffer.at(1) == 0x00) {
+		if (!sniffedFrame.empty() && EstiaFrame::readUint16(snifferBuffer, 0) == FRAME_BEGIN) {
 			// frame shorter than expected and shorter than max
 			if (sniffedFrame.size() < frameSize && frameSize <= FRAME_MAX_LEN
 			    && sniffedFrame.size() <= FRAME_MAX_LEN) {
@@ -172,7 +172,7 @@ bool EstiaSerial::splitSnifferBuffer() {
 		if (frameSize != 0 && sniffedFrame.size() > frameSize) {
 			// check sniffed frame for next frame begin byte (skip first byte)
 			for (uint8_t idx = 1; idx < sniffedFrame.size(); idx++) {
-				if (sniffedFrame.at(idx) == FRAME_BEGIN) {
+				if (EstiaFrame::readUint16(sniffedFrame, idx) == FRAME_BEGIN) {
 					FrameBuffer firstFrame(sniffedFrame.begin(), sniffedFrame.begin() + idx);
 					sniffedFrame.erase(sniffedFrame.begin(), sniffedFrame.begin() + idx);
 					sniffedFrames.push_back(firstFrame);
@@ -185,6 +185,9 @@ bool EstiaSerial::splitSnifferBuffer() {
 		snifferBuffer.pop_front();
 	}
 	sniffedFrames.push_back(sniffedFrame);
+	while (sniffedFrames.size() >= SNIFFED_FRAMES_LIMIT) {
+		sniffedFrames.pop_front();
+	}
 	sniffedFrame.clear();
 
 	return true;
@@ -352,14 +355,12 @@ void EstiaSerial::write(const Frame& frame, bool disableRx) {
 
 void EstiaSerial::read(ReadBuffer& buffer, bool byteDelay) {
 	digitalWrite(LED_BUILTIN, LOW);
-	while (serial->available()) {    // read response
+	while (serial->available()) {
 		uint8_t newByte = serial->read();
 		if (byteDelay) { delay(ESTIA_SERIAL_BYTE_DELAY); }
 		buffer.push_back(newByte);
-		if (buffer.size() > 2) {
-			if (buffer.back() == 0x00 && buffer.at(buffer.size() - 2) == 0xa0) {    // new frame already began
-				break;
-			}
+		if (EstiaFrame::readUint16(buffer, buffer.size() - 2) == FRAME_BEGIN) {    // new frame already began
+			break;
 		}
 	}
 	digitalWrite(LED_BUILTIN, HIGH);

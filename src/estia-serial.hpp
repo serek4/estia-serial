@@ -36,6 +36,8 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define ESTIA_SERIAL_BYTE_DELAY 5     // 4.2 ms minimum for baud 2400
 #define ESTIA_SERIAL_READ_DELAY 55    // minimum valid frame is 13 Bytes so min 54.6ms between frames
 
+#define SNIFFED_FRAMES_LIMIT 64
+
 #define REQUEST_RETRIES 2
 #define REQUEST_TIMEOUT 200
 
