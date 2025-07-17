@@ -136,8 +136,9 @@ class EstiaFrame {
 	template <typename Buffer>
 	static uint16_t readUint16(const Buffer& buffer, uint8_t offset);
 	static uint16_t crc16(uint8_t* data, size_t len);    // CRC-16/MCRF4XX
-	static String stringify(EstiaFrame* frame);
-	static String stringify(const FrameBuffer& buffer);
+	String stringify();
+	template <typename Buffer>
+	static String stringify(const Buffer& buffer);
 	static FrameBuffer readBuffToFrameBuff(const ReadBuffer& buffer);
 	template <typename Buffer>
 	static bool isStatusFrame(const Buffer& buffer);

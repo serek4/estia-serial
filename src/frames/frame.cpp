@@ -94,11 +94,12 @@ bool EstiaFrame::insertData(uint8_t* data, bool incHeader, bool updateCrc) {
 	return true;
 }
 
-String EstiaFrame::stringify(EstiaFrame* frame) {
-	return stringify(frame->buffer);
+String EstiaFrame::stringify() {
+	return stringify(this->buffer);
 }
 
-String EstiaFrame::stringify(const FrameBuffer& buffer) {
+template <typename Buffer>
+String EstiaFrame::stringify(const Buffer& buffer) {
 	String stringifyBuffer = "";
 	for (auto& byte : buffer) {
 		if (byte < 0x10) { stringifyBuffer += "0"; }
@@ -107,6 +108,9 @@ String EstiaFrame::stringify(const FrameBuffer& buffer) {
 	stringifyBuffer.trim();
 	return stringifyBuffer;
 }
+
+template String EstiaFrame::stringify<FrameBuffer>(const FrameBuffer& buffer);
+template String EstiaFrame::stringify<ReadBuffer>(const ReadBuffer& buffer);
 
 void EstiaFrame::setSrc(uint16_t src, bool updateCrc) {
 	this->src = src;
