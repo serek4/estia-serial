@@ -137,9 +137,12 @@ class EstiaFrame {
 	static String stringify(EstiaFrame* frame);
 	static String stringify(const FrameBuffer& buffer);
 	static FrameBuffer readBuffToFrameBuff(const ReadBuffer& buffer);
-	static bool isStatusFrame(const ReadBuffer& buffer);
-	static bool isStatusUpdateFrame(const ReadBuffer& buffer);
-	static bool isAckFrame(const ReadBuffer& buffer);
+	template <typename Buffer>
+	static bool isStatusFrame(const Buffer& buffer);
+	template <typename Buffer>
+	static bool isStatusUpdateFrame(const Buffer& buffer);
+	template <typename Buffer>
+	static bool isAckFrame(const Buffer& buffer);
 
 	friend class EstiaSerial;
 };

@@ -189,6 +189,8 @@ class ForcedDefrostFrame : public EstiaFrame {
 class AckFrame : public EstiaFrame {
   private:
   public:
+	AckFrame(FrameBuffer&& buffer);
+	AckFrame(FrameBuffer& buffer);
 	AckFrame(ReadBuffer& buffer);
 
 	uint16_t frameCode;

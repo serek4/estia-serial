@@ -55,6 +55,7 @@ class StatusFrame : public EstiaFrame {
 
   public:
 	StatusFrame(FrameBuffer&& buffer, uint8_t length);
+	StatusFrame(FrameBuffer& buffer, uint8_t length);
 	StatusFrame(ReadBuffer& buffer, uint8_t length);
 
 	uint8_t error;

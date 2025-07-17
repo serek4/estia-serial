@@ -73,8 +73,8 @@ class EstiaSerial {
 	void modeSwitch(std::string mode, uint8_t onOff);
 	void operationSwitch(std::string operation, uint8_t onOff);
 	bool splitSnifferBuffer();
-	void decodeStatus(ReadBuffer buffer);
-	void decodeAck(ReadBuffer& buffer);
+	bool decodeStatus(FrameBuffer& buffer);
+	bool decodeAck(FrameBuffer& buffer);
 	void queueCommand(EstiaFrame& command);
 	bool sendCommand();
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);

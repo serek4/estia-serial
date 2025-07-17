@@ -25,6 +25,10 @@ StatusFrame::StatusFrame(FrameBuffer&& buffer, uint8_t length)
 	error = checkFrame(longFrame ? FRAME_TYPE_STATUS : FRAME_TYPE_UPDATE, FRAME_DATA_TYPE_STATUS);
 }
 
+StatusFrame::StatusFrame(FrameBuffer& buffer, uint8_t length)
+    : StatusFrame::StatusFrame(std::forward<FrameBuffer>(buffer), length) {
+}
+
 StatusFrame::StatusFrame(ReadBuffer& buffer, uint8_t length)
     : StatusFrame::StatusFrame(readBuffToFrameBuff(buffer), length) {
 }

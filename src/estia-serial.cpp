@@ -55,11 +55,13 @@ EstiaSerial::SnifferState EstiaSerial::sniffer() {
 	if (millis() - readTimer > ESTIA_SERIAL_READ_DELAY) {    // throttle serial read
 		readTimer = millis();
 		this->read(snifferBuffer);
-		if (!snifferBuffer.empty() && snifferBuffer.front() == FRAME_BEGIN) {
-			decodeAck(snifferBuffer);
-			decodeStatus(snifferBuffer);
+		if (this->splitSnifferBuffer()) {
+			for (auto& frame : sniffedFrames) {
+				if (frame.front() != FRAME_BEGIN) { continue; }
+				if (decodeStatus(frame)) { continue; }
+				decodeAck(frame);
+			}
 		}
-		this->splitSnifferBuffer();
 	}
 	if (!sniffedFrames.empty()) { return sniff_frame_pending; }
 	if (!snifferBuffer.empty() || serial->available()) { return sniff_busy; }
@@ -76,20 +78,15 @@ FrameBuffer EstiaSerial::getSniffedFrame() {
 	return frame;
 }
 
-void EstiaSerial::decodeStatus(ReadBuffer buffer) {
-	if (buffer.size() > FRAME_STATUS_LEN) { buffer.resize(FRAME_STATUS_LEN); }
-	bool isStatusFrame = EstiaFrame::isStatusFrame(buffer);
+bool EstiaSerial::decodeStatus(FrameBuffer& buffer) {
+	if (!(EstiaFrame::isStatusFrame(buffer) || EstiaFrame::isStatusUpdateFrame(buffer))) { return false; }
 
-	if (!isStatusFrame && buffer.size() > FRAME_UPDATE_LEN) { buffer.resize(FRAME_UPDATE_LEN); }
-	bool isUpdateFrame = EstiaFrame::isStatusUpdateFrame(buffer);
-
-	if (isStatusFrame || isUpdateFrame) {
-		StatusFrame statusFrame(buffer, buffer.size());
-		if (statusFrame.error == StatusFrame::err_ok) {
-			statusData = statusFrame.decode();
-			newStatusData = true;
-		}
+	StatusFrame statusFrame(buffer, buffer.size());
+	if (statusFrame.error == StatusFrame::err_ok) {
+		statusData = statusFrame.decode();
+		newStatusData = true;
 	}
+	return true;
 }
 
 StatusData& EstiaSerial::getStatusData() {
@@ -97,11 +94,11 @@ StatusData& EstiaSerial::getStatusData() {
 	return statusData;
 }
 
-void EstiaSerial::decodeAck(ReadBuffer& buffer) {
-	if (!EstiaFrame::isAckFrame(buffer)) { return; }
+bool EstiaSerial::decodeAck(FrameBuffer& buffer) {
+	if (!EstiaFrame::isAckFrame(buffer)) { return false; }
 
 	AckFrame ackFrame(buffer);
-	if (ackFrame.error != StatusFrame::err_ok) { return; }
+	if (ackFrame.error != StatusFrame::err_ok) { return true; }
 
 	frameAck = ackFrame.frameCode;
 
@@ -111,6 +108,7 @@ void EstiaSerial::decodeAck(ReadBuffer& buffer) {
 		cmdRetry = 0;
 		cmdSent = false;
 	}
+	return true;
 }
 
 void EstiaSerial::queueCommand(EstiaFrame& command) {

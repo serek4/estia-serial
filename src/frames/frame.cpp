@@ -184,23 +184,35 @@ FrameBuffer EstiaFrame::readBuffToFrameBuff(const ReadBuffer& buffer) {
 	return frameBuffer;
 }
 
-bool EstiaFrame::isStatusFrame(const ReadBuffer& buffer) {
+template <typename Buffer>
+bool EstiaFrame::isStatusFrame(const Buffer& buffer) {
 	return buffer.size() == FRAME_STATUS_LEN
 	       && buffer.at(FRAME_TYPE_OFFSET) == FRAME_TYPE_STATUS
 	       && buffer.at(FRAME_DATA_LEN_OFFSET) == FRAME_STATUS_DATA_LEN
 	       && readUint16(buffer, FRAME_DATA_TYPE_OFFSET) == FRAME_DATA_TYPE_STATUS;
 }
 
-bool EstiaFrame::isStatusUpdateFrame(const ReadBuffer& buffer) {
+template bool EstiaFrame::isStatusFrame<ReadBuffer>(const ReadBuffer& buffer);
+template bool EstiaFrame::isStatusFrame<FrameBuffer>(const FrameBuffer& buffer);
+
+template <typename Buffer>
+bool EstiaFrame::isStatusUpdateFrame(const Buffer& buffer) {
 	return buffer.size() == FRAME_UPDATE_LEN
 	       && buffer.at(FRAME_TYPE_OFFSET) == FRAME_TYPE_UPDATE
 	       && buffer.at(FRAME_DATA_LEN_OFFSET) == FRAME_UPDATE_DATA_LEN
 	       && readUint16(buffer, FRAME_DATA_TYPE_OFFSET) == FRAME_DATA_TYPE_STATUS;
 }
 
-bool EstiaFrame::isAckFrame(const ReadBuffer& buffer) {
+template bool EstiaFrame::isStatusUpdateFrame<ReadBuffer>(const ReadBuffer& buffer);
+template bool EstiaFrame::isStatusUpdateFrame<FrameBuffer>(const FrameBuffer& buffer);
+
+template <typename Buffer>
+bool EstiaFrame::isAckFrame(const Buffer& buffer) {
 	return buffer.size() == FRAME_ACK_LEN
 	       && buffer.at(FRAME_TYPE_OFFSET) == FRAME_TYPE_ACK
 	       && buffer.at(FRAME_DATA_LEN_OFFSET) == FRAME_ACK_DATA_LEN
 	       && readUint16(buffer, FRAME_DATA_TYPE_OFFSET) == FRAME_DATA_TYPE_ACK;
 }
+
+template bool EstiaFrame::isAckFrame<ReadBuffer>(const ReadBuffer& buffer);
+template bool EstiaFrame::isAckFrame<FrameBuffer>(const FrameBuffer& buffer);
