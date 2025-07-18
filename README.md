@@ -98,7 +98,8 @@ estiaSerial.requestData(0x06);     // request data by code
 ### Request multiple data points at once
 
 Default sensors data to request is defined in `config.h` -> `SENSORS_DATA_TO_REQUEST`.  
-Data will be saved to `estiaSerial.sensorData`.
+Data will be saved internally. There is flag available `estiaSerial.newSensorsData`  
+to indicate when request complete. To get data call `estiaSerial.getSensorData()`.
 
 Data structure (`std::map`)  
 ```c++
@@ -110,35 +111,26 @@ data value equal or below `-200` is an error code
 
 
 ```c++
-if (estiaSerial.requestSensorsData()) {    // request update for all data points
-	for (auto& element : estiaSerial.sensorsData) {
-		Serial.printf("%s :", element.first);
+static uint32_t requestDataTimer = 0;
+if (millis() - requestDataTimer >= 30000) {
+	requestDataTimer = millis();
+	// request update for default data points (config.h -> SENSORS_DATA_TO_REQUEST)
+	estiaSerial.requestSensorsData();
+	// or request update for chosen data points
+	// estiaSerial.requestSensorsData({"twi", "two", "wf"}, true)
+}
+if (estiaSerial.newSensorsData) {
+	for (auto& sensor : estiaSerial.getSensorsData()) {
+		Serial.printf("%s :", sensor.first);
 		// data is error code skip multiplier
-		if (element.second.value <= EstiaSerial::err_not_exist) {
-			Serial.print(element.second.value);
+		if (sensor.second.value <= EstiaSerial::err_not_exist) {
+			Serial.print(sensor.second.value);
 		} else {
-			Serial.print(element.second.value * element.second.multiplier);
+			Serial.print(sensor.second.value * sensor.second.multiplier);
 		}
 		Serial.println();
 	}
 }
-```
-It is possible to update only few sensors.
-
-```c++
-if (estiaSerial.requestSensorsData({"twi", "two", "wf"}, true)) {
-	for (auto& element : estiaSerial.sensorsData) {    // request update for chosen data points
-		Serial.printf("%s :", element.first);
-		// data is error code skip multiplier
-		if (element.second.value <= EstiaSerial::err_not_exist) {
-			Serial.print(element.second.value);
-		} else {
-			Serial.print(element.second.value * element.second.multiplier);
-		}
-		Serial.println();
-	}
-}
-
 ```
 
 

@@ -29,8 +29,10 @@ EstiaSerial::EstiaSerial(uint8_t rxPin, uint8_t txPin)
     : serial(&softwareSerial)
     , rxPin(rxPin)
     , txPin(txPin)
-    , requestDone(false)
-    , requestCounter(0)
+    , newSensorsData(false)
+    , requestSent(false)
+    , requestQueue()
+    , requestTimer(0)
     , requestRetry(0)
     , snifferBuffer()
     , sniffedFrame()
@@ -59,13 +61,15 @@ EstiaSerial::SnifferState EstiaSerial::sniffer() {
 			for (auto& frame : sniffedFrames) {
 				if (EstiaFrame::readUint16(frame, 0) != FRAME_BEGIN) { continue; }
 				if (decodeStatus(frame)) { continue; }
-				decodeAck(frame);
+				if (decodeAck(frame)) { continue; }
+				decodeResponse(frame);
 			}
 		}
 	}
 	if (!sniffedFrames.empty()) { return sniff_frame_pending; }
 	if (!snifferBuffer.empty() || serial->available()) { return sniff_busy; }
 	if (sendCommand()) { return sniff_busy; }
+	if (sendRequest()) { return sniff_busy; }
 	return sniff_idle;
 }
 
@@ -95,6 +99,7 @@ StatusData& EstiaSerial::getStatusData() {
 }
 
 EstiaData& EstiaSerial::getSensorsData() {
+	newSensorsData = false;
 	return sensorsData;
 }
 
@@ -144,6 +149,73 @@ uint16_t EstiaSerial::getAck() {
 	uint16_t acked = frameAck;
 	frameAck = 0;
 	return acked;
+}
+
+bool EstiaSerial::sendRequest() {
+	if (requestQueue.empty()) { return false; }
+
+	// discard invalid requests
+	while (requestsMap.count(requestQueue.front()) == 0) {
+		requestQueue.pop_front();
+		if (requestQueue.empty()) { break; }
+	}
+	// request timeout
+	if (requestSent && !requestQueue.empty() && millis() - requestTimer >= REQUEST_TIMEOUT) {
+		requestRetry++;
+		if (requestRetry > REQUEST_RETRIES) {
+			saveSensorData(err_timeout);
+			requestQueue.pop_front();
+			requestRetry = 0;
+		}
+		requestSent = false;
+	}
+	// last queue element was popped
+	if (requestQueue.empty()) {
+		newSensorsData = true;
+	}
+	if (!requestSent && !requestQueue.empty() && !cmdSent && millis() - requestTimer >= REQUEST_DELAY) {
+		this->write(DataReqFrame(requestsMap.at(requestQueue.front()).code));
+		requestTimer = millis();
+		requestSent = true;
+		return true;
+	}
+	return false;
+}
+
+bool EstiaSerial::decodeResponse(FrameBuffer& buffer) {
+	if (!EstiaFrame::isDataResFrame(buffer)) { return false; }
+	if (requestQueue.empty()) { return true; }
+
+	requestTimer = millis();
+	DataResFrame resFrame(buffer);
+	if (resFrame.error != DataResFrame::err_ok) {
+		resFrame.value = err_timeout + -resFrame.error;
+		requestRetry++;
+		if (requestRetry <= REQUEST_RETRIES) {
+			requestSent = false;
+			return true;
+		}
+	}
+
+	saveSensorData(resFrame.value);
+
+	// remove request from queue
+	requestQueue.pop_front();
+	requestRetry = 0;
+	requestSent = false;
+
+	if (requestQueue.empty()) {
+		newSensorsData = true;
+	}
+	return true;
+}
+
+void EstiaSerial::saveSensorData(uint16_t data) {
+	if (sensorsData.count(requestQueue.front()) == 1) {
+		sensorsData.at(requestQueue.front()).value = data;
+	} else {
+		sensorsData.emplace(requestQueue.front(), SensorData(data, requestsMap.at(requestQueue.front()).multiplier));
+	}
 }
 
 bool EstiaSerial::splitSnifferBuffer() {
@@ -206,9 +278,10 @@ int16_t EstiaSerial::requestData(uint8_t requestCode) {
 		delay(ESTIA_SERIAL_BYTE_DELAY);
 	}
 	delay(ESTIA_SERIAL_BYTE_DELAY * 2);    // 2 bytes head start
-	ReadBuffer buffer;
-	this->read(buffer);               // read response into buffer
-	DataResFrame response(buffer);    // create response frame from read buffer
+	splitSnifferBuffer();                  // read out data in buffer
+	snifferBuffer.clear();
+	this->read(snifferBuffer);
+	DataResFrame response(snifferBuffer);
 	if (response.error != DataResFrame::err_ok) { return err_timeout + -response.error; }
 	return response.value;
 }
@@ -225,30 +298,17 @@ void EstiaSerial::clearSensorsData() {
 }
 
 bool EstiaSerial::requestSensorsData(DataToRequest&& sensorsToRequest, bool clear) {
-	if (requestDone) {
-		if (clear) { clearSensorsData(); }
-		requestDone = false;
-		requestCounter = 0;
+	if (!requestQueue.empty()) { return false; }    // request in progress
+
+	newSensorsData = false;
+	if (clear) { clearSensorsData(); }
+	for (auto& sensor : sensorsToRequest) {
+		if (requestsMap.count(sensor) == 0) {
+			continue;
+		}
+		requestQueue.push_back(sensor);
 	}
-	std::string req = sensorsToRequest.at(requestCounter);
-	int16_t res = requestData(req);
-	if (res <= err_timeout && requestRetry < REQUEST_RETRIES) {
-		requestRetry++;
-		return requestDone;    // false
-	}
-	requestRetry = 0;
-	if (sensorsData.count(req) == 1) {
-		sensorsData.at(req).value = res;
-	} else {
-		sensorsData.emplace(req, SensorData(res, requestsMap.at(req).multiplier));
-	}
-	if (requestCounter >= sensorsToRequest.size() - 1) {
-		requestCounter = 0;
-		requestDone = true;
-	} else {
-		requestCounter++;
-	}
-	return requestDone;
+	return true;
 }
 
 bool EstiaSerial::requestSensorsData(DataToRequest& sensorsToRequest, bool clear) {

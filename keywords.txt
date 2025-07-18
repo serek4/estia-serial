@@ -53,8 +53,11 @@ operationSwitch KEYWORD2
 splitSnifferBuffer  KEYWORD2
 decodeStatus    KEYWORD2
 decodeAck   KEYWORD2
+decodeResponse  KEYWORD2
+saveSensorData  KEYWORD2
 queueCommand    KEYWORD2
 sendCommand KEYWORD2
+sendRequest KEYWORD2
 write   KEYWORD2
 read    KEYWORD2
 begin   KEYWORD2

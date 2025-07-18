@@ -37,8 +37,9 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 
 #define SNIFFED_FRAMES_LIMIT 64
 
+#define REQUEST_TIMEOUT 220    // 4x ESTIA_SERIAL_READ_DELAY
+#define REQUEST_DELAY 110      // 2x ESTIA_SERIAL_READ_DELAY
 #define REQUEST_RETRIES 2
-#define REQUEST_TIMEOUT 200
 
 #define CMD_TIMEOUT 1000
 #define CMD_QUEUE_SIZE 10
@@ -59,8 +60,9 @@ class EstiaSerial {
 	int8_t rxPin;
 	int8_t txPin;
 	EstiaData sensorsData;
-	bool requestDone;
-	uint8_t requestCounter;
+	bool requestSent;
+	DataToRequest requestQueue;
+	uint32_t requestTimer;
 	uint8_t requestRetry;
 	ReadBuffer snifferBuffer;
 	FrameBuffer sniffedFrame;
@@ -77,8 +79,11 @@ class EstiaSerial {
 	bool splitSnifferBuffer();
 	bool decodeStatus(FrameBuffer& buffer);
 	bool decodeAck(FrameBuffer& buffer);
+	bool decodeResponse(FrameBuffer& buffer);
+	void saveSensorData(uint16_t data);
 	void queueCommand(EstiaFrame& command);
 	bool sendCommand();
+	bool sendRequest();
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
 	void read(ReadBuffer& buffer, bool byteDelay = true);
 
@@ -102,6 +107,7 @@ class EstiaSerial {
 
 	uint16_t frameAck;
 	bool newStatusData;
+	bool newSensorsData;
 
 	void begin();
 	SnifferState sniffer();
