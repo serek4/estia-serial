@@ -26,7 +26,6 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #include <deque>
 #include <map>
 #include <string>
-#include <vector>
 
 #define ESTIA_SERIAL_BAUD 2400              // 2400
 #define ESTIA_SERIAL_CONFIG SWSERIAL_8E1    // 8E1
@@ -50,7 +49,7 @@ struct SensorData {
 	int16_t value;
 	float multiplier;
 };
-using DataToRequest = std::vector<std::string>;
+using DataToRequest = std::deque<std::string>;
 using EstiaData = std::map<std::string, SensorData>;
 using SniffedFrames = std::deque<FrameBuffer>;
 using CommandsQueue = std::deque<EstiaFrame>;
@@ -59,6 +58,7 @@ class EstiaSerial {
   private:
 	int8_t rxPin;
 	int8_t txPin;
+	EstiaData sensorsData;
 	bool requestDone;
 	uint8_t requestCounter;
 	uint8_t requestRetry;
@@ -102,13 +102,13 @@ class EstiaSerial {
 
 	uint16_t frameAck;
 	bool newStatusData;
-	EstiaData sensorsData;
 
 	void begin();
 	SnifferState sniffer();
 	FrameBuffer getSniffedFrame();
 	uint16_t getAck();
 	StatusData& getStatusData();
+	EstiaData& getSensorsData();
 	int16_t requestData(uint8_t requestCode);
 	int16_t requestData(std::string request);
 	void clearSensorsData();

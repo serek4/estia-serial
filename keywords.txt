@@ -62,6 +62,7 @@ sniffer KEYWORD2
 getSniffedFrame KEYWORD2
 getAck  KEYWORD2
 getStatusData   KEYWORD2
+getSensorsData  KEYWORD2
 requestData KEYWORD2
 clearSensorsData    KEYWORD2
 requestSensorsData  KEYWORD2
@@ -89,6 +90,7 @@ readBuffToFrameBuff KEYWORD2
 isStatusFrame   KEYWORD2
 isStatusUpdateFrame KEYWORD2
 isAckFrame  KEYWORD2
+isDataResFrame  KEYWORD2
 
 modeOnOff   KEYWORD2
 operationOnOff  KEYWORD2

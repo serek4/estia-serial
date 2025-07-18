@@ -146,6 +146,8 @@ class EstiaFrame {
 	static bool isStatusUpdateFrame(const Buffer& buffer);
 	template <typename Buffer>
 	static bool isAckFrame(const Buffer& buffer);
+	template <typename Buffer>
+	static bool isDataResFrame(const Buffer& buffer);
 
 	friend class EstiaSerial;
 };

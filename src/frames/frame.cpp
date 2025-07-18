@@ -220,3 +220,14 @@ bool EstiaFrame::isAckFrame(const Buffer& buffer) {
 
 template bool EstiaFrame::isAckFrame<ReadBuffer>(const ReadBuffer& buffer);
 template bool EstiaFrame::isAckFrame<FrameBuffer>(const FrameBuffer& buffer);
+
+template <typename Buffer>
+bool EstiaFrame::isDataResFrame(const Buffer& buffer) {
+	return buffer.size() == FRAME_RES_DATA_LEN
+	       && buffer.at(FRAME_TYPE_OFFSET) == FRAME_TYPE_RES_DATA
+	       && buffer.at(FRAME_DATA_LEN_OFFSET) == FRAME_RES_DATA_DATA_LEN
+	       && readUint16(buffer, FRAME_DATA_TYPE_OFFSET) == FRAME_DATA_TYPE_DATA_RESPONSE;
+}
+
+template bool EstiaFrame::isDataResFrame<ReadBuffer>(const ReadBuffer& buffer);
+template bool EstiaFrame::isDataResFrame<FrameBuffer>(const FrameBuffer& buffer);

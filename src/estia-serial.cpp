@@ -94,6 +94,10 @@ StatusData& EstiaSerial::getStatusData() {
 	return statusData;
 }
 
+EstiaData& EstiaSerial::getSensorsData() {
+	return sensorsData;
+}
+
 bool EstiaSerial::decodeAck(FrameBuffer& buffer) {
 	if (!EstiaFrame::isAckFrame(buffer)) { return false; }
 
