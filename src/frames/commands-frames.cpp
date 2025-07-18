@@ -103,14 +103,14 @@ TemperatureFrame::TemperatureFrame(uint8_t zone, uint8_t zone1Temperature, uint8
 	switch (zone) {
 	case TEMPERATURE_COOLING_CODE:
 	case TEMPERATURE_HEATING_CODE:
-		setByte(TEMPERATURE_ZONE1_VALUE_OFFSET, convertTemp(zone1Temperature));
-		setByte(TEMPERATURE_ZONE2_VALUE_OFFSET, convertTemp(zone2Temperature));
-		setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature));
-		setByte(TEMPERATURE_ZONE1_VALUE2_OFFSET, convertTemp(zone1Temperature), true);
+		setByte(TEMPERATURE_ZONE1_VALUE_OFFSET, convertTemp(this->zone1Temperature));
+		setByte(TEMPERATURE_ZONE2_VALUE_OFFSET, convertTemp(this->zone2Temperature));
+		setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(this->hotWaterTemperature));
+		setByte(TEMPERATURE_ZONE1_VALUE2_OFFSET, convertTemp(this->zone1Temperature), true);
 		break;
 
 	case TEMPERATURE_HOT_WATER_CODE:
-		setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(hotWaterTemperature), true);
+		setByte(TEMPERATURE_HOT_WATER_VALUE_OFFSET, convertTemp(this->hotWaterTemperature), true);
 		break;
 	}
 }
