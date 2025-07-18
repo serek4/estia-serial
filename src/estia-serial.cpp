@@ -359,7 +359,7 @@ void EstiaSerial::read(ReadBuffer& buffer, bool byteDelay) {
 		uint8_t newByte = serial->read();
 		if (byteDelay) { delay(ESTIA_SERIAL_BYTE_DELAY); }
 		buffer.push_back(newByte);
-		if (EstiaFrame::readUint16(buffer, buffer.size() - 2) == FRAME_BEGIN) {    // new frame already began
+		if (buffer.size() > 2 && EstiaFrame::readUint16(buffer, buffer.size() - 2) == FRAME_BEGIN) {    // new frame already began
 			break;
 		}
 	}
