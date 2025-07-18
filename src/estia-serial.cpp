@@ -103,7 +103,7 @@ bool EstiaSerial::decodeAck(FrameBuffer& buffer) {
 	frameAck = ackFrame.frameCode;
 
 	// command received, remove from queue
-	if (ackFrame.frameCode == cmdQueue.front().dataType) {
+	if (cmdSent && ackFrame.frameCode == cmdQueue.front().dataType) {
 		cmdQueue.pop_front();
 		cmdRetry = 0;
 		cmdSent = false;
