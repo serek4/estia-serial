@@ -20,7 +20,7 @@ a0 00 xx xx 00 xx xx xx xx xx xx xx xx xx xx xx
 0x18 ack
 0x1a data response
 0x1c status data update
-0x55 30s status often corrupted
+0x55 30s (remote?) status
 0x58 19 30s status (long)
 0x58 0b 30m status (short)
 0x98 at boot
@@ -131,12 +131,12 @@ a0 00 1a 0d 00 08 00 00 40 00 ef 00 80 00 a2 00 2c 6c 6c
 
 command byte `11`  
 
-#### heating/cooling switch
+#### heating-cooling switch
 ```
 a0 00 11 08 00 00 40 08 00 03 c0 06 83 e7             -> heating, 0x06
 a0 00 11 08 00 00 40 08 00 03 c0 05 b1 7c             -> cooling, 0x05
 ```
-#### heating on/off
+#### heating/cooling on/off
 ```
 a0 00 11 08 00 00 40 08 00 00 41 23 8f 38             -> on,  0x23
 a0 00 11 08 00 00 40 08 00 00 41 22 9e b1             -> off, 0x22
@@ -185,7 +185,7 @@ a0 00 11 0b 00 00 40 08 00 03 c4 88 00 00 00 0a d2    -> off,             comman
 #### night mode activate/deactivate
 ```
 a0 00 11 0b 00 00 40 08 00 03 c4 88 88 00 00 c0 fc    -> activate,        command 0x88, value 0x88 (0x11 << 3) current | 0x80
-a0 00 11 0b 00 00 40 08 00 03 c4 88 08 00 00  crc     -> deactivate,      command 0x88, value 0x08 (0x01 << 3) current & 0x08
+a0 00 11 0b 00 00 40 08 00 03 c4 88 08 00 00 cc 10    -> deactivate,      command 0x88, value 0x08 (0x01 << 3) current & 0x08
 ```
 #### combined `17` bytes frame
 

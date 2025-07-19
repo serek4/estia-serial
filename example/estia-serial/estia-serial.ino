@@ -46,7 +46,7 @@ void loop() {
 		// to avoid data collisions write and request data here
 		if (estiaSerial.newSensorsData) {
 			for (auto& sensor : estiaSerial.getSensorsData()) {
-				Serial.printf("%s :", sensor.first);
+				Serial.printf("%s :", sensor.first.c_str());
 				// data is error code skip multiplier
 				if (sensor.second.value <= EstiaSerial::err_not_exist) {
 					Serial.print(sensor.second.value);
