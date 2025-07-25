@@ -32,13 +32,14 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #ifdef ARDUINO_ARCH_ESP32
 #define LED_BUILTIN 0
 #endif
-#define ESTIA_SERIAL_BYTE_DELAY 5     // 4.2 ms minimum for baud 2400
-#define ESTIA_SERIAL_READ_DELAY 55    // minimum valid frame is 13 Bytes so min 54.6ms between frames
+#define ESTIA_SERIAL_BYTE_DELAY 5        // 4.2 ms minimum for baud 2400
+#define ESTIA_SERIAL_READ_TIMEOUT 190    // maximum valid frame is 45 Bytes so max 189ms transmit time
+#define ESTIA_SERIAL_MIN_AVAILABLE 2     // minimum available bytes in serial buffer to start read
 
 #define SNIFFED_FRAMES_LIMIT 64
 
-#define REQUEST_TIMEOUT 220    // 4x ESTIA_SERIAL_READ_DELAY
-#define REQUEST_DELAY 110      // 2x ESTIA_SERIAL_READ_DELAY
+#define REQUEST_TIMEOUT 220    // 4x shortest valid frame transmit time
+#define REQUEST_DELAY 110      // 2x shortest valid frame transmit time
 #define REQUEST_RETRIES 2
 
 #define CMD_TIMEOUT 1000
@@ -76,7 +77,7 @@ class EstiaSerial {
 	SoftwareSerial* serial;
 	void modeSwitch(std::string mode, uint8_t onOff);
 	void operationSwitch(std::string operation, uint8_t onOff);
-	bool splitSnifferBuffer();
+	bool splitSnifferBuffer(bool ignoreMinLen = false);
 	bool decodeStatus(FrameBuffer& buffer);
 	bool decodeAck(FrameBuffer& buffer);
 	bool decodeResponse(FrameBuffer& buffer);
@@ -85,7 +86,7 @@ class EstiaSerial {
 	bool sendCommand();
 	bool sendRequest();
 	void write(const uint8_t* buffer, uint8_t len, bool disableRx = true);
-	void read(ReadBuffer& buffer, bool byteDelay = true);
+	bool read(ReadBuffer& buffer, bool byteDelay = true);
 
   public:
 	enum ResponseError {

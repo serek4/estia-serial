@@ -54,10 +54,11 @@ void EstiaSerial::begin() {
 
 EstiaSerial::SnifferState EstiaSerial::sniffer() {
 	static u_long readTimer = 0;
-	if (millis() - readTimer > ESTIA_SERIAL_READ_DELAY) {    // throttle serial read
+	bool timeout = !snifferBuffer.empty() && millis() - readTimer >= ESTIA_SERIAL_READ_TIMEOUT;
+	if (serial->available() >= ESTIA_SERIAL_MIN_AVAILABLE || timeout) {
+		bool newFrame = this->read(snifferBuffer);
 		readTimer = millis();
-		this->read(snifferBuffer);
-		if (this->splitSnifferBuffer()) {
+		if (this->splitSnifferBuffer(newFrame || timeout)) {
 			for (auto& frame : sniffedFrames) {
 				if (EstiaFrame::readUint16(frame, 0) != FRAME_BEGIN) { continue; }
 				if (decodeStatus(frame)) { continue; }
@@ -218,8 +219,8 @@ void EstiaSerial::saveSensorData(uint16_t data) {
 	}
 }
 
-bool EstiaSerial::splitSnifferBuffer() {
-	if (snifferBuffer.size() <= FRAME_HEAD_LEN) { return false; }
+bool EstiaSerial::splitSnifferBuffer(bool ignoreMinLen) {
+	if (!ignoreMinLen && snifferBuffer.size() < FRAME_MIN_LEN) { return false; }
 
 	uint8_t frameSize = 0;
 	while (!snifferBuffer.empty()) {
@@ -417,15 +418,17 @@ void EstiaSerial::write(const Frame& frame, bool disableRx) {
 	this->write(frame.data(), frame.size(), disableRx);
 }
 
-void EstiaSerial::read(ReadBuffer& buffer, bool byteDelay) {
+bool EstiaSerial::read(ReadBuffer& buffer, bool byteDelay) {
+	if (!serial->available()) { return false; }
+
 	digitalWrite(LED_BUILTIN, LOW);
 	while (serial->available()) {
-		uint8_t newByte = serial->read();
+		buffer.push_back(serial->read());
 		if (byteDelay) { delay(ESTIA_SERIAL_BYTE_DELAY); }
-		buffer.push_back(newByte);
 		if (buffer.size() > 2 && EstiaFrame::readUint16(buffer, buffer.size() - 2) == FRAME_BEGIN) {    // new frame already began
 			break;
 		}
 	}
 	digitalWrite(LED_BUILTIN, HIGH);
+	return static_cast<bool>(serial->available());
 }
