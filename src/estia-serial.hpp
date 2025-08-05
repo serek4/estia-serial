@@ -21,6 +21,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #include "config.h"
 #include "frames/commands-frames.hpp"
 #include "frames/data-frames.hpp"
+#include "frames/frame-fixer.hpp"
 #include "frames/status-frames.hpp"
 #include <SoftwareSerial.h>
 #include <deque>
@@ -75,6 +76,7 @@ class EstiaSerial {
 	uint8_t cmdRetry;
 
 	SoftwareSerial* serial;
+	FrameFixer frameFixer;
 	void modeSwitch(std::string mode, uint8_t onOff);
 	void operationSwitch(std::string operation, uint8_t onOff);
 	bool splitSnifferBuffer(bool ignoreMinLen = false);

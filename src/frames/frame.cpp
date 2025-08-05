@@ -155,6 +155,9 @@ bool EstiaFrame::writeUint16(Buffer& buffer, uint8_t offset, uint16_t data) {
 	return true;
 }
 
+template bool EstiaFrame::writeUint16<FrameBuffer>(FrameBuffer& buffer, uint8_t offset, uint16_t data);
+template bool EstiaFrame::writeUint16<ReadBuffer>(ReadBuffer& buffer, uint8_t offset, uint16_t data);
+
 template <typename Buffer>
 uint16_t EstiaFrame::readUint16(const Buffer& buffer, uint8_t offset) {
 	if (offset >= buffer.size()) { return 0x0000; }

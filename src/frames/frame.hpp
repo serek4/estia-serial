@@ -39,6 +39,7 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_TYPE_ACK 0x18
 #define FRAME_TYPE_RES_DATA 0x1a
 #define FRAME_TYPE_UPDATE 0x1c
+#define FRAME_TYPE_STATUS2 0x55
 #define FRAME_TYPE_STATUS 0x58
 
 #define FRAME_BEGIN 0xa000
@@ -72,6 +73,8 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_STATUS_DATA_LEN 0x19
 #define FRAME_UPDATE_DATA_LEN 0x0f
 #define FRAME_FORCE_DEFROST_DATA_LEN 0x0a
+#define FRAME_STATUS2_DATA_LEN 0x09
+#define FRAME_SHORT_STATUS_DATA_LEN 0x0b
 
 #define FRAME_HEAD_LEN 0x04
 #define FRAME_CRC_LEN 0x02
@@ -89,6 +92,8 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 #define FRAME_STATUS_LEN 31
 #define FRAME_UPDATE_LEN 21
 #define FRAME_FORCE_DEFROST_LEN 16
+#define FRAME_STATUS2_LEN 15
+#define FRAME_SHORT_STATUS_LEN 17
 
 using ReadBuffer = std::deque<uint8_t>;
 using FrameBuffer = std::vector<uint8_t>;

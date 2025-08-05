@@ -44,6 +44,7 @@ EstiaSerial::EstiaSerial(uint8_t rxPin, uint8_t txPin)
     , cmdQueue()
     , cmdTimer(0)
     , cmdRetry(0)
+    , frameFixer()
     , sensorsData() {
 }
 
@@ -60,6 +61,7 @@ EstiaSerial::SnifferState EstiaSerial::sniffer() {
 		readTimer = millis();
 		if (this->splitSnifferBuffer(newFrame || timeout)) {
 			for (auto& frame : sniffedFrames) {
+				frameFixer.fixFrame(frame);
 				if (EstiaFrame::readUint16(frame, 0) != FRAME_BEGIN) { continue; }
 				if (decodeStatus(frame)) { continue; }
 				if (decodeAck(frame)) { continue; }

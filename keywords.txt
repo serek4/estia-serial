@@ -24,6 +24,10 @@ FrameBuffer KEYWORD1
 EstiaFrame  KEYWORD1
 Error   KEYWORD1
 
+KnownFrame  KEYWORD1
+KnownFrames KEYWORD1
+FrameFixer  KEYWORD1
+
 DataReqFrame    KEYWORD1
 
 RequestData KEYWORD1
@@ -94,6 +98,11 @@ isStatusFrame   KEYWORD2
 isStatusUpdateFrame KEYWORD2
 isAckFrame  KEYWORD2
 isDataResFrame  KEYWORD2
+
+fixDataLength   KEYWORD2
+fixStaticBytes  KEYWORD2
+fixFrameType    KEYWORD2
+fixDataHeader   KEYWORD2
 
 modeOnOff   KEYWORD2
 operationOnOff  KEYWORD2
