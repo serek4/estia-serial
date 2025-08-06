@@ -29,12 +29,14 @@ struct KnownFrame {
 	uint16_t src;
 	uint16_t dst;
 	uint16_t dataType;
+	uint8_t len;
 };
 
 using KnownFrames = std::vector<KnownFrame>;
 
 class FrameFixer {
   private:
+	bool addMissingBytes();
 	bool fixDataLength();
 	bool fixStaticBytes();
 	bool fixFrameType(const KnownFrame& frame);

@@ -99,6 +99,7 @@ isStatusUpdateFrame KEYWORD2
 isAckFrame  KEYWORD2
 isDataResFrame  KEYWORD2
 
+addMissingBytes KEYWORD2
 fixDataLength   KEYWORD2
 fixStaticBytes  KEYWORD2
 fixFrameType    KEYWORD2

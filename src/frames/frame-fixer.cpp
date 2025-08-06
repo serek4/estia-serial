@@ -35,7 +35,8 @@ KnownFrame::KnownFrame(uint8_t frameType, uint8_t dataLen, uint16_t src, uint16_
     , dataLen(dataLen)
     , src(src)
     , dst(dst)
-    , dataType(dataType) {}
+    , dataType(dataType)
+    , len(dataLen + FRAME_HEAD_AND_CRC_LEN) {}
 
 FrameFixer::FrameFixer()
     : fixedBuffer()
@@ -44,12 +45,19 @@ FrameFixer::FrameFixer()
 }
 
 bool FrameFixer::fixFrame(FrameBuffer& buffer) {
-	if (buffer.size() < FRAME_MIN_LEN) { return false; }
+	if (buffer.size() < FRAME_MIN_LEN - 2) { return false; }
 
 	this->crc = EstiaFrame::readUint16(buffer, buffer.size() - 2);
 	if (crc == EstiaFrame::crc16(buffer.data(), buffer.size() - 2)) { return true; }
 
 	this->fixedBuffer = buffer;
+
+	if (this->addMissingBytes()) {
+		buffer.swap(fixedBuffer);
+		return true;
+	}
+
+	if (fixedBuffer.size() < FRAME_MIN_LEN) { return false; }
 
 	if (this->fixDataLength()) {
 		buffer.swap(fixedBuffer);
@@ -77,6 +85,23 @@ bool FrameFixer::fixFrame(FrameBuffer& buffer) {
 
 	return false;
 };
+
+bool FrameFixer::addMissingBytes() {
+	if (EstiaFrame::readUint16(fixedBuffer, 0) == FRAME_BEGIN) { return false; }
+
+	for (auto& frame : knownFrames) {
+		if (fixedBuffer.front() == 0x00 && fixedBuffer.size() == frame.len - 1) {
+			fixedBuffer.insert(fixedBuffer.begin(), 0xa0);
+			if (crc == EstiaFrame::crc16(fixedBuffer.data(), fixedBuffer.size() - 2)) { return true; }
+			break;
+		} else if (fixedBuffer.front() == frame.frameType && fixedBuffer.size() == frame.len - 2) {
+			fixedBuffer.insert(fixedBuffer.begin(), {0xa0, 0x00});
+			if (crc == EstiaFrame::crc16(fixedBuffer.data(), fixedBuffer.size() - 2)) { return true; }
+			break;
+		}
+	}
+	return false;
+}
 
 bool FrameFixer::fixDataLength() {
 	if (fixedBuffer.at(FRAME_DATA_LEN_OFFSET) + FRAME_HEAD_AND_CRC_LEN == fixedBuffer.size()) { return false; }
