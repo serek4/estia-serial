@@ -163,7 +163,7 @@ bool EstiaSerial::sendRequest() {
 		if (requestQueue.empty()) { break; }
 	}
 	// request timeout
-	if (requestSent && !requestQueue.empty() && millis() - requestTimer >= REQUEST_TIMEOUT) {
+	if (requestSent && !requestQueue.empty() && millis() - requestTimer >= (requestRetry + 1) * REQUEST_TIMEOUT) {
 		requestRetry++;
 		if (requestRetry > REQUEST_RETRIES) {
 			saveSensorData(err_timeout);

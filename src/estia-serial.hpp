@@ -39,9 +39,9 @@ License along with this library; if not, see <https://www.gnu.org/licenses/>.
 
 #define SNIFFED_FRAMES_LIMIT 64
 
-#define REQUEST_TIMEOUT 220    // 4x shortest valid frame transmit time
+#define REQUEST_TIMEOUT 135    // response + heartbeat transmit time
 #define REQUEST_DELAY 110      // 2x shortest valid frame transmit time
-#define REQUEST_RETRIES 2
+#define REQUEST_RETRIES 3
 
 #define CMD_TIMEOUT 1000
 #define CMD_QUEUE_SIZE 10
